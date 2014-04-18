@@ -1,0 +1,13 @@
+In the database part, we are planing to use JDBC driver for SQL Server to process queries. For the front-end, we use Javascript and Html to design User Interface. And we use RESTEasy which is a JBoss project to privdes web services over the http protocol. 
+In the UI, we will allow users to put different requests and show them the results with tables or charts. Once user sends request, the frontend(using Javascript and HTML) will send the information to backend(RestEasy), and it will manulate data in database by JDBC driver. After processing the data, it send back to front end, front end will process the information and show the final result to users.  
+
+The functionality of our service includes following: 
+1. Show the quote price for each company
+2. Determine appreciation of investments in portfolios.  
+3. Rank individual's stock / portfolio.
+4. Rank the profilios by final net worth.
+5. Rank the ndividuals y final net worth.
+6. List the top five or ten lowest-risk stocks
+7. List top 25 stocks in annualized rate
+8. Show the specific protfolios in total value at one point.
+
