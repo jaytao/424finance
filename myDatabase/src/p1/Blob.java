@@ -21,7 +21,7 @@ public class Blob {
 			 System.out.println("No jdbc found");			
 		}
 		try {
-			connection = DriverManager.getConnection("jdbc:mysql://Localhost/myDatabase", "root", "dingding1016");
+			connection = DriverManager.getConnection("jdbc:mysql://Localhost/myDatabase", "root", "password");
 		}catch(Exception e) {
 			System.out.println("Error Occured While connecting " + e);
 		}
