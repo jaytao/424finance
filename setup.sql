@@ -1,11 +1,12 @@
+
 USE stocks;
 
 CREATE TABLE quotes(
     ticker VARCHAR(10), 
-    date DATE, 
-    adjclose DEC(15,2), 
-    PRIMARY KEY (ticker, date)
-);
+    time VARCHAR(40), 
+    adjclose DEC(15,2),  
+    PRIMARY KEY (ticker, time)
+   );
 
 CREATE TABLE fund(
     name VARCHAR(50), 
@@ -26,27 +27,30 @@ CREATE TABLE activity(
 CREATE TABLE owns(
     fund VARCHAR(50), 
     ticker VARCHAR(10), 
-    date DATE, 
+    time VARCHAR(40), 
     amount INT(50), 
     
     INDEX (fund),
-    INDEX (ticker, date),
+    INDEX (ticker, time),
 
     FOREIGN KEY (fund) REFERENCES fund(name), 
-    FOREIGN KEY (ticker, date) REFERENCES quotes(ticker, date)
+    FOREIGN KEY (ticker, time) REFERENCES quotes(ticker, time)       
 );
 
 CREATE TABLE contains(
-    parent VARCHAR(50), 
-    child VARCHAR(50), 
+    individual VARCHAR(50), 
+    portofolio VARCHAR(50), 
     amount INT(50), 
     percent DEC(20,20),
     
-    INDEX (parent),
-    INDEX (child),
+    INDEX (individual),
+    INDEX (portofolio),
 
-    FOREIGN KEY (parent) REFERENCES fund(name),
-    FOREIGN KEY (child) REFERENCES fund(name)
+    FOREIGN KEY (individual) REFERENCES fund(name),
+    FOREIGN KEY (portofolio) REFERENCES fund(name)
 );
 
-LOAD DATA INFILE "/home/jeff/424/424finance/quotes.csv" INTO TABLE quotes COLUMNS TERMINATED BY ',' escaped by '"' lines terminated by '\n' ignore 1 lines;
+LOAD DATA INFILE "/home/xwang125/Class/cmsc424/project/424finance/quotes.csv" INTO TABLE quotes COLUMNS TERMINATED BY ',' escaped by '"' lines terminated by '\n' ignore 1 lines;
+
+LOAD DATA INFILE "/home/xwang125/Class/cmsc424/project/424finance/script.csv" INTO TABLE activity COLUMNS TERMINATED BY ',' escaped by '"' lines terminated by '\n' ignore 1 lines;
+
