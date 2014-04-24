@@ -28,16 +28,15 @@ CREATE TABLE activity(
 CREATE TABLE owns(
     fund VARCHAR(50), 
     ticker VARCHAR(10), 
-    time Date, 
     amount INT(50), 
     date_order Date, 
     date_execute Date, 
  
     INDEX (fund),
-    INDEX (ticker, time),
+    INDEX (ticker, date_execute),
 
     FOREIGN KEY (fund) REFERENCES fund(name), 
-    FOREIGN KEY (ticker, time) REFERENCES quotes(ticker, time)       
+    FOREIGN KEY (ticker, date_execute) REFERENCES quotes(ticker, time)       
 );
 
 CREATE TABLE contains(
