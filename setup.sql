@@ -1,12 +1,13 @@
-
+DROP DATABASE stocks;
+CREATE DATABASE stocks;
 USE stocks;
 
 CREATE TABLE quotes(
     ticker VARCHAR(10), 
-    time VARCHAR(40), 
+    time Date, 
     adjclose DEC(15,2),  
     PRIMARY KEY (ticker, time)
-   );
+);
 
 CREATE TABLE fund(
     name VARCHAR(50), 
@@ -27,9 +28,11 @@ CREATE TABLE activity(
 CREATE TABLE owns(
     fund VARCHAR(50), 
     ticker VARCHAR(10), 
-    time VARCHAR(40), 
+    time Date, 
     amount INT(50), 
-    
+    date_order Date, 
+    date_execute Date, 
+ 
     INDEX (fund),
     INDEX (ticker, time),
 
@@ -42,7 +45,9 @@ CREATE TABLE contains(
     portofolio VARCHAR(50), 
     amount INT(50), 
     percent DEC(20,20),
-    
+    date_order Date, 
+    date_execute Date,
+ 
     INDEX (individual),
     INDEX (portofolio),
 
@@ -50,7 +55,4 @@ CREATE TABLE contains(
     FOREIGN KEY (portofolio) REFERENCES fund(name)
 );
 
-LOAD DATA INFILE "/home/xwang125/Class/cmsc424/project/424finance/quotes.csv" INTO TABLE quotes COLUMNS TERMINATED BY ',' escaped by '"' lines terminated by '\n' ignore 1 lines;
-
-LOAD DATA INFILE "/home/xwang125/Class/cmsc424/project/424finance/script.csv" INTO TABLE activity COLUMNS TERMINATED BY ',' escaped by '"' lines terminated by '\n' ignore 1 lines;
-
+LOAD DATA INFILE "/home/jeff/424/424finance/quotes.csv" INTO TABLE quotes COLUMNS TERMINATED BY ',' escaped by '"' lines terminated by '\n' ignore 1 lines;
