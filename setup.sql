@@ -45,7 +45,6 @@ CREATE TABLE contains(
     amount INT(50), 
     percent DEC(20,20),
     date_order Date, 
-    date_execute Date,
  
     INDEX (individual),
     INDEX (portofolio),
