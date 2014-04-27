@@ -11,10 +11,8 @@ CREATE TABLE quotes(
 
 CREATE TABLE fund(
     name VARCHAR(50), 
-    cash INT(50) NOT NULL, 
+    cash DEC(50,2) NOT NULL, 
     isIndividual BOOL NOT NULL, 
-
-    PRIMARY KEY (name)
 );
 
 CREATE TABLE activity(
@@ -25,7 +23,7 @@ CREATE TABLE activity(
     col_4 VARCHAR(50)
 ); 
 
-CREATE TABLE stockhistory(
+CREATE TABLE owns(
     fund VARCHAR(50), 
     ticker VARCHAR(10), 
     amount INT(50), 
@@ -43,7 +41,6 @@ CREATE TABLE contains(
     individual VARCHAR(50), 
     portofolio VARCHAR(50), 
     amount INT(50), 
-    percent DEC(20,20),
     date_order Date, 
  
     INDEX (individual),
@@ -52,4 +49,13 @@ CREATE TABLE contains(
     FOREIGN KEY (individual) REFERENCES fund(name)
 );
 
+CREATE TABLE cash(
+    name VARCHAR(50),
+    cash DEC(50,2),
+    time date 
+)
+
+CREATE TABLE value(
+
+)
 LOAD DATA INFILE "/home/jeff/424/424finance/quotes.csv" INTO TABLE quotes COLUMNS TERMINATED BY ',' escaped by '"' lines terminated by '\n' ignore 1 lines;
