@@ -11,3 +11,5 @@ The functionality of our service includes following:
 7. List top 25 stocks in annualized rate
 8. Show the specific protfolios in total value at one point.
 
+to load the data:
+load data infile "/home/xwang125/Class/cmsc424/project/script1.csv" into table activity columns terminated by ',' escaped by '"' lines terminated by '\n' ignore 1 lines;
