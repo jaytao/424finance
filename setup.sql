@@ -25,7 +25,7 @@ CREATE TABLE activity(
     col_4 VARCHAR(50)
 ); 
 
-CREATE TABLE owns(
+CREATE TABLE stockhistory(
     fund VARCHAR(50), 
     ticker VARCHAR(10), 
     amount INT(50), 
