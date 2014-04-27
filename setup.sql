@@ -45,13 +45,11 @@ CREATE TABLE contains(
     amount INT(50), 
     percent DEC(20,20),
     date_order Date, 
-    date_execute Date,
  
     INDEX (individual),
     INDEX (portofolio),
 
-    FOREIGN KEY (individual) REFERENCES fund(name),
-    FOREIGN KEY (portofolio) REFERENCES fund(name)
+    FOREIGN KEY (individual) REFERENCES fund(name)
 );
 
 LOAD DATA INFILE "/home/jeff/424/424finance/quotes.csv" INTO TABLE quotes COLUMNS TERMINATED BY ',' escaped by '"' lines terminated by '\n' ignore 1 lines;
