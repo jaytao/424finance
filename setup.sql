@@ -56,6 +56,9 @@ CREATE TABLE cash(
 )
 
 CREATE TABLE value(
-
+    fund VARCHAR(50),
+    value dec(50,2),
+    time date    
 )
+
 LOAD DATA INFILE "/home/jeff/424/424finance/quotes.csv" INTO TABLE quotes COLUMNS TERMINATED BY ',' escaped by '"' lines terminated by '\n' ignore 1 lines;
