@@ -12,7 +12,9 @@ CREATE TABLE quotes(
 CREATE TABLE fund(
     name VARCHAR(50), 
     cash DEC(50,2) NOT NULL, 
-    isIndividual BOOL NOT NULL, 
+    isIndividual BOOL NOT NULL,
+
+    PRIMARY KEY (name)
 );
 
 CREATE TABLE activity(
@@ -53,12 +55,12 @@ CREATE TABLE cash(
     name VARCHAR(50),
     cash DEC(50,2),
     time DATE 
-)
+);
 
 CREATE TABLE value(
     fund VARCHAR(50),
     value DEC(50,2),
     time DATE 
-)
+);
 
 LOAD DATA INFILE "/home/jeff/424/424finance/quotes.csv" INTO TABLE quotes COLUMNS TERMINATED BY ',' escaped by '"' lines terminated by '\n' ignore 1 lines;
