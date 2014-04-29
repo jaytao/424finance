@@ -29,6 +29,7 @@ public class Process {
 	Hashtable<ArrayList<String>, Integer> trackBuy = new Hashtable<ArrayList<String>, Integer>();
 	HashSet<String> funds;
 	HashSet<String> individual;
+	Hashtable<String, Double> trackCash = new Hashtable<String, Double>();
 	public Process() throws IOException {
 		 
 		funds = new HashSet<String>();
@@ -327,6 +328,64 @@ public class Process {
 		e.printStackTrace();
 	}
 }
+	
+	public void fillCash() throws SQLException {
+		String st = "select * from owns order by fund, date_execute";
+		statement = connection.prepareStatement(st);
+		ResultSet result = statement.executeQuery();
+		while(result.next()) {
+			String porto = result.getString("fund");
+			String date = result.getString("date_execute");
+			System.out.println(porto);
+			System.out.println(date);
+			
+			String initialCash = "select cash from fund where name = '" + porto + "'";
+			statement = connection.prepareStatement(initialCash);
+			ResultSet rs1 = statement.executeQuery();
+			double cash = 0;
+			if(rs1.next()) {
+				if(!trackCash.containsKey(porto)) { // first time read from fund table
+					cash = rs1.getDouble("cash");
+					trackCash.put(porto, cash);
+					System.out.println("cash1 " + cash);
+				}
+				else {
+					cash = trackCash.get(porto);
+					System.out.println("cash2 " + cash);
+				}
+			}
+			String dayCash = "select ticker, amount from owns where fund = ? and date_execute = ?"; 
+		
+			statement = connection.prepareStatement(dayCash); 
+			statement.setString(1, porto);
+			statement.setString(2, date);
+			System.out.println(statement.toString());
+			ResultSet rs = statement.executeQuery();
+			while(rs.next()){
+				double invest = rs.getInt("amount");
+				System.out.println("invest:" + invest);
+				String ticker = rs.getString("ticker");
+				if(invest > 0.00) { // buy stock
+					cash = cash - invest;
+					trackCash.put(porto, cash); // update the cash
+					System.out.println("cash3 " + cash);
+				}
+				else { // sell stock, put cash back to fund
+					cash = cash + sellAmount(porto, ticker, date);
+					double d = sellAmount(porto, ticker, date);
+					System.out.println("Amount " + d);
+					trackCash.put(porto, cash);
+					System.out.println("cash4 " + cash);
+				}
+			}
+			String insert = "insert into cash values(?, ?, ?)";
+			statement = connection.prepareStatement(insert);
+			statement.setString(1, porto);
+			statement.setDouble(2, cash);
+			statement.setString(3,  date);
+			statement.executeUpdate();
+		}
+	}
 		
 	//get the real date to buy or sell, finding match date from quotes
 	private String update(String company, String time) throws ParseException, SQLException {
