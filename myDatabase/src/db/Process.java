@@ -27,12 +27,10 @@ public class Process {
 	PreparedStatement statement = null;
 //	Statement statement = null;
 	Hashtable<ArrayList<String>, Integer> trackBuy = new Hashtable<ArrayList<String>, Integer>();
-	Company companySet = new Company();
-	ArrayList<String> companies;
 	HashSet<String> funds;
 	HashSet<String> individual;
 	public Process() throws IOException {
-		 companies = companySet.getCompany();
+		 
 		funds = new HashSet<String>();
 		individual = new HashSet<String>();
 		try {
@@ -41,7 +39,8 @@ public class Process {
 			 System.out.println("No jdbc found");			
 		}
 		try {
-			connection = DriverManager.getConnection("jdbc:mysql://Localhost/stocks", "root", "ps");
+			//connection = DriverManager.getConnection("jdbc:mysql://Localhost/stocks", "root", "ps");
+			connection = DriverManager.getConnection("jdbc:mysql://Localhost/stocks", "root", "toor");
 		}catch(Exception e) {
 			System.out.println("Error Occured While connecting " + e);
 		}
@@ -50,7 +49,8 @@ public class Process {
 	
 	
 	public void fillActivity() {
-		String csvFile = "/home/xwang125/Class/cmsc424/project/script1.csv";
+		//String csvFile = "/home/xwang125/Class/cmsc424/project/script1.csv";
+		String csvFile = "/home/jeff/424/424finance/script1.csv";
 		BufferedReader br = null;
 		String line = "";
 		String cvsSplitBy = ",";
@@ -103,7 +103,8 @@ public class Process {
 	
 	
 	public void fillFund() {
-		String csvFile = "/home/xwang125/Class/cmsc424/project/script1.csv";
+		String csvFile = "/home/jeff/424/424finance/script1.csv";
+		//String csvFile = "/home/xwang125/Class/cmsc424/project/script1.csv";
 		BufferedReader br = null;
 		String line = "";
 		String cvsSplitBy = ",";
@@ -142,7 +143,8 @@ public class Process {
 		}
 	}
 	public void fillContains() throws ParseException { // track individual invest funds
-		String csvFile = "/home/xwang125/Class/cmsc424/project/script1.csv";
+		//String csvFile = "/home/xwang125/Class/cmsc424/project/script1.csv";
+		String csvFile = "/home/jeff/424/424finance/script1.csv";
 		BufferedReader br = null;
 		String line = "";
 		String cvsSplitBy = ",";
@@ -154,7 +156,7 @@ public class Process {
 				
 				String[] found = line.split(cvsSplitBy);
 				if((individual.contains(found[1]) && funds.contains(found[2])) 
-						|| (individual.contains(found[1]) && companies.contains(found[2]))) {
+						|| (individual.contains(found[1]) && Constants.COMPANIES.contains(found[2]))) {
 					String insert = "insert into contains value(?, ?, ?, ?, ?)";
 					try {
 						statement = connection.prepareStatement(insert);
@@ -216,7 +218,8 @@ public class Process {
 		
 			
 	public void fillOwn() throws ParseException {
-		String csvFile = "/home/xwang125/Class/cmsc424/project/script1.csv";
+		//String csvFile = "/home/xwang125/Class/cmsc424/project/script1.csv";
+		String csvFile = "/home/jeff/424/424finance/script1.csv";
 		BufferedReader br = null;
 		String line = "";
 		String cvsSplitBy = ",";
@@ -233,7 +236,7 @@ public class Process {
 				if(found[0].equals("buy")){ //check if company exist
 					System.out.println(i++);
 					System.out.println(found[2]);
-					if(!(companies.contains(found[2]))) {
+					if(!(Constants.COMPANIES.contains(found[2]))) {
 			//	System.out.println("**************************");	
 						continue;
 					}
@@ -267,7 +270,7 @@ public class Process {
 					}
 				}
 						else if (found[0].equals("sell")){ // for sell
-							if(!(companies.contains(found[2]))) {
+							if(!(Constants.COMPANIES.contains(found[2]))) {
 								//	System.out.println("**************************");	
 											continue;
 							}
@@ -287,7 +290,7 @@ public class Process {
 			
 				
 				else if(found[0].equals("sellbuy")) { //for buysell case
-					if(!(companySet.companies.contains(found[2])) || !(companySet.companies.contains(found[3]))) {
+					if(!(Constants.COMPANIES.contains(found[2])) || !(Constants.COMPANIES.contains(found[3]))) {
 						continue;
 					}
 					String exeTime = update(found[2], found[4]);
@@ -353,38 +356,26 @@ public class Process {
 			return 0;
 		}
 		String time1 = set1.getString("date_execute");
-		String st = "(select * from quotes where ticker = " + "'" + company + "'" + " and time = " + "'" + time1 + "' order by time asc limit 1)" +
-				" union " + 
-				"(select * from quotes where ticker = " + "'" + company + "'" + " and time = " + "'" + time + "' order by time asc limit 1);";
-		System.out.println(st);
-		statement = connection.prepareStatement(st);
-		ResultSet set = statement.executeQuery();
-//		double[] price = new double[2];
-		ArrayList<Double> arr = new ArrayList<Double>();
-		while (set.next()) {
-			arr.add(set.getDouble("adjclose"));
-		}
-		double startPrice = arr.get(0);
-		double lastPrice = arr.get(1);
+		
 		ArrayList<String> ls = new ArrayList<String>();
 		ls.add(funds);
 		ls.add(company);
 		int amount = trackBuy.get(ls);
-		System.out.println("startPrice " + startPrice);
-		System.out.println(lastPrice);
-		System.out.println(amount);
-		finalPrice = amount * (lastPrice / startPrice);
+		finalPrice = amount * Queries.stockAppreciation(connection, company, time1, time);
 		return finalPrice;
 	}
 	
+	
 	public static void main(String[] args) throws  SQLException, IOException, ParseException{
-		Process testBlob = new Process();
-//		System.out.println("Hello");
-		String name = "Peter";
-		testBlob.fillActivity();
-		testBlob.fillFund();
-		testBlob.fillContains();
-		testBlob.fillOwn();
+//		Process testBlob = new Process();
+//		String name = "Peter";
+//		testBlob.fillActivity();
+//		testBlob.fillFund();
+//		testBlob.fillContains();
+//		testBlob.fillOwn();
+		
+//		Connection c = Utils.connectToSQL("root", "toor");
+//		System.out.println(Utils.getFundValue(c, "fund_1", "2013-01-01"));
 	}
 	
 //public void insert() {
