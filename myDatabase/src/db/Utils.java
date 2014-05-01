@@ -5,13 +5,13 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.HashSet;
 
 public class Utils {
 	public static Connection connectToSQL(String user, String password) {
 		try {
-			Connection c = DriverManager.getConnection(
-					"jdbc:mysql://Localhost/stocks", user, password);
+			Connection c = DriverManager.getConnection("jdbc:mysql://Localhost/stocks", user, password);
 			return c;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -20,48 +20,26 @@ public class Utils {
 		}
 	}
 
-	// returns value of fund at that date
-	public static double getFundValue(Connection connection,String fundName, String date) {
-		double totalValue = 0;
-		// cash
+	private static final String QUOTES_EXECUTE_DATE = "select * from quotes where ticker=? and time>=? order by (time) limit 1;";
+	// get the real date to buy or sell, finding match date from quotes
+	public static String findExecuteDate(Connection connection, String company, String time){
 
-		// algorithm - query owns table for fund before date in descending
-		// order.
-		// go through and add each stock to a set. if amount > 0, calculate how
-		// much worth now
-		// if amount = 0, then ignore all instances that come after for that
-		// fund
+		PreparedStatement statement;
 		try {
-			PreparedStatement st = connection
-					.prepareStatement(Queries.OWNS_FUND_VALUE);
-			st.setString(1, fundName);
-			st.setString(2, date);
-			ResultSet result = st.executeQuery();
-			HashSet<String> done = new HashSet<String>();
-
-			while (result.next()) {
-				String ticker = result.getString("ticker");
-				System.out.println(ticker);
-				double amount = result.getDouble("amount");
-				String dateExe = result.getString("date_execute");
-				System.out.println(dateExe);
-				if (done.contains(ticker)) {
-					continue;
-				}
-				if (amount == 0.0) {
-					done.add(ticker);
-				} else {
-					totalValue += amount
-							* Queries.stockAppreciation(connection, ticker,
-									dateExe, date);
-				}
-
+			statement = connection.prepareStatement(QUOTES_EXECUTE_DATE);
+			statement.setString(1, company);
+			statement.setString(2, time);
+			ResultSet result = statement.executeQuery();
+			if (result.next()) {
+				return result.getString("time");
+			} else {
+				return "2013-12-31";
 			}
-			return totalValue;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return 0;
+		return null;
 	}
+
 }

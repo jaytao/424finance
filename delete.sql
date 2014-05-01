@@ -1,6 +1,6 @@
-USE stocks;
-DROP TABLE owns;
-DROP TABLE contains;
-DROP TABLE quotes;
-DROP TABLE fund;
-DROP TABLE activity;
+DELETE FROM owns;
+DELETE FROM contains;
+DELETE FROM fund;
+DELETE FROM activity;
+DELETE FROM value;
+DELETE FROM cash;
