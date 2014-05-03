@@ -6,10 +6,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class Queries {
-	private static final String VALUE_INSERT = "insert into value values(?,?,?);";
+	private static final String VALUE_INSERT = "replace into value values(?,?,?);";
 	private static final String OWNS_INSERT = "insert into owns values(?,?,?,?,?);";
 	private static final String CONTAINS_INSERT = "insert into contains values(?,?,?,?);";
-	private static final String CASH_INSERT = "insert into cash values(?,?,?);";
+	private static final String CASH_INSERT = "replace into cash values(?,?,?);";
 	private static final String ACTIVITY_INSERT = "insert into activity values(?,?,?,?,?);";
 	private static final String FUND_INSERT = "insert into fund values(?,?)";
 
@@ -118,7 +118,9 @@ public class Queries {
 	// return ratio of stock appreciation between two dates
 	// date1 -start, date2 - end
 	public static double stockAppreciation(Connection connection, String ticker, String date1, String date2) {
-
+		if (date1.equals(date2)){
+			return 1;
+		}
 		try {
 			PreparedStatement st = connection.prepareStatement(Queries.QUOTES_APPRECIATION);
 			st.setString(1, ticker);
@@ -136,6 +138,9 @@ public class Queries {
 			return price2 / price1;
 
 		} catch (SQLException e) {
+			System.out.println(ticker);
+			System.out.println(date1);
+			System.out.println(date2);
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 
@@ -196,13 +201,94 @@ public class Queries {
 			st.setString(1, name);
 			st.setString(2, date);
 			ResultSet rs = st.executeQuery();
+			
 			rs.next();
 			double percent = rs.getDouble(2);
-			double value = Queries.getFundTotalValue(connection, name, date);
 			
+			double value = Queries.getFundTotalValue(connection, name, date);
 			return percent * value;
 			
 		}catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return 0;
+	}
+	
+	private static final String OWNS_PERCENT = "select * from owns where fund=? and ticker=? order by date_execute desc;";
+	public static double getStockOwnsPercent(Connection connection, String fund, String ticker){
+		try{
+			PreparedStatement st = connection.prepareStatement(OWNS_PERCENT);
+			st.setString(1, fund);
+			st.setString(2, ticker);
+			ResultSet rs = st.executeQuery();
+			rs.next();
+			return rs.getDouble(3);
+		} catch (SQLException e){
+			e.printStackTrace();
+		}
+		return 0;
+	}
+	
+	private static final String OWNS_FUND = "select * from owns where fund=? order by date_execute desc;";
+	public static ResultSet getFundOwnsStock(Connection connection, String fund) throws SQLException{
+		PreparedStatement st = connection.prepareStatement(OWNS_FUND);
+		st.setString(1, fund);
+		return st.executeQuery();
+	}
+	
+	private static final String OWNS_DATE_BOUGHT = "select * from owns where fund=? and ticker=? order by date_execute asc limit 1";
+	public static String getStockDateBought(Connection connection, String fund, String ticker){
+		try {
+			PreparedStatement st = connection.prepareStatement(OWNS_DATE_BOUGHT);
+			st.setString(1, fund);
+			st.setString(2, ticker);
+			ResultSet rs = st.executeQuery();
+			rs.next();
+			return rs.getString(5);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	private static final String CONTAINS_PERCENT = "select * from contains where individual=? and portfolio=? order by date_order limit 1;";
+	public static double getIndividualFundPercent(Connection connection, String ind, String fund){
+		try {
+			PreparedStatement st = connection.prepareStatement(CONTAINS_PERCENT);
+			st.setString(1, ind);
+			st.setString(2, fund);
+			ResultSet rs = st.executeQuery();
+			rs.next();
+			return rs.getDouble(3);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return 0;
+	}
+	
+	private static final String CONTAINS_FUND = "select * from contains where individual=? order by date_order desc;";
+	public static ResultSet getIndOwnsFund(Connection connection, String ind) throws SQLException{
+		PreparedStatement st = connection.prepareStatement(CONTAINS_FUND);
+		st.setString(1, ind);
+		return st.executeQuery();
+	}
+	
+	private static final String CONTAINS_BUYAMOUNT = "select percent*value from contains, value where individual=? " +
+			"and portfolio=? and portfolio=fund and time=date_order order by time asc limit 1;";
+	
+	public static double getIndBuyFundAmount(Connection connection, String ind, String port){
+		try {
+			PreparedStatement st = connection.prepareStatement(CONTAINS_BUYAMOUNT);
+			st.setString(1, ind);
+			st.setString(2, port);
+			
+			ResultSet rs = st.executeQuery();
+			rs.next();
+			return rs.getDouble(1);
+		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

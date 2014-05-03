@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.HashMap;
 import java.util.HashSet;
 
 public class Utils {
@@ -21,8 +22,9 @@ public class Utils {
 	}
 
 	private static final String QUOTES_EXECUTE_DATE = "select * from quotes where ticker=? and time>=? order by (time) limit 1;";
+
 	// get the real date to buy or sell, finding match date from quotes
-	public static String findExecuteDate(Connection connection, String company, String time){
+	public static String findExecuteDate(Connection connection, String company, String time) {
 
 		PreparedStatement statement;
 		try {
@@ -40,6 +42,69 @@ public class Utils {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	public static double fundCurrentValue(Connection connection, String fund, String date) {
+		try {
+			HashMap<String, Double> stockAmount = new HashMap<String, Double>();
+			double fundValue = Queries.getFundTotalValue(connection, fund, date);
+			double newFundValue = 0;
+			
+			ResultSet rs = Queries.getFundOwnsStock(connection, fund);
+			// update all stocks that fund owns (appreciate to present)
+			while (rs.next()) {
+				String ticker = rs.getString(2);
+				double percent = rs.getDouble(3);
+				if (stockAmount.containsKey(ticker)) {
+					continue;
+				}
+				if (percent == 0.0) {
+					stockAmount.put(ticker, 0.0);
+					continue;
+				}
+				String dateBought = Queries.getStockDateBought(connection, fund, ticker);
+				String exeDate = Utils.findExecuteDate(connection, ticker, date);
+				double amount = percent * Queries.stockAppreciation(connection, ticker, dateBought, exeDate) * fundValue;
+				stockAmount.put(ticker, amount);
+				newFundValue += amount;
+			}
+			if (newFundValue == 0){
+				return -1;
+			}
+			newFundValue += Queries.getCash(connection, fund, date);
+			return newFundValue;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return -1;
+	}
+	
+	public static void updateContainsSell(Connection connection, String ind, String fund, String date){
+		double modifier = 1.0 - Queries.getIndividualFundPercent(connection, ind, fund);
+		
+		try {
+			ResultSet rs = Queries.getIndOwnsFund(connection, ind);
+			HashSet<String> finished = new HashSet<String>();
+			
+			while(rs.next()){
+				String portfolio = rs.getString(2);
+				double percent = rs.getDouble(3);
+				if (finished.contains(portfolio) || percent == 0.0){
+					continue;
+				}
+				//portfolio we are trying to sell
+				if (portfolio.equals(fund)){
+					Queries.insertContains(connection, ind, portfolio, 0.0, date);
+				}
+				else{
+					Queries.insertContains(connection, ind, portfolio, percent/modifier, date);
+				}
+				finished.add(portfolio);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

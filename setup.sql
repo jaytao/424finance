@@ -41,12 +41,12 @@ CREATE TABLE owns(
 
 CREATE TABLE contains(
     individual VARCHAR(50), 
-    portofolio VARCHAR(50), 
+    portfolio VARCHAR(50), 
     percent DEC(15,14),
     date_order Date, 
  
     INDEX (individual),
-    INDEX (portofolio),
+    INDEX (portfolio),
 
     FOREIGN KEY (individual) REFERENCES fund(name)
 );
@@ -54,13 +54,16 @@ CREATE TABLE contains(
 CREATE TABLE cash(
     name VARCHAR(50),
     percent DEC(15,14),
-    time DATE 
+    time DATE,
+    PRIMARY KEY(name, time)
 );
 
 CREATE TABLE value(
     fund VARCHAR(50),
     value DEC(50,2),
-    time DATE 
+    time DATE ,
+
+    PRIMARY KEY(fund, time)
 );
 
 LOAD DATA INFILE "/home/jeff/424/424finance/quotes.csv" INTO TABLE quotes COLUMNS TERMINATED BY ',' escaped by '"' lines terminated by '\n' ignore 1 lines;
