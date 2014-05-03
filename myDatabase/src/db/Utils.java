@@ -89,7 +89,11 @@ public class Utils {
 			while(rs.next()){
 				String portfolio = rs.getString(2);
 				double percent = rs.getDouble(3);
-				if (finished.contains(portfolio) || percent == 0.0){
+				if (finished.contains(portfolio)){
+					continue;
+				}
+				if (percent == 0.0){
+					finished.add(portfolio);
 					continue;
 				}
 				//portfolio we are trying to sell
