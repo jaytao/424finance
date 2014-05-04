@@ -1,34 +1,42 @@
 package gui;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
+import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableModel;
 
 import db.Process;
+import db.Utils;
 
 public class Funds extends JPanel{
 	private JTextField textField;
 	private JTextArea textArea;
-
-	Company portfolio;
+	private Connection connection;
+//	Company portfolio;
 
 	public Funds() throws IOException {
+		connection = Utils.connectToSQL("root", "dingding1016"); 
 
 		JPanel out1 = new JPanel(new GridLayout(0,1));
 
@@ -70,13 +78,79 @@ public class Funds extends JPanel{
 		out.add(p2);
 
 
-		b1.addActionListener(new TotalReturn());
+		b2.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				JFrame f = showNewFrame("total net worth");
+				Sql sql = new Sql();
+				ResultSet set = sql.portofolioTotalNetWorth(connection, "2005-01-04", "2013-12-31");
+				JTable t = createTable(set, 2);
+				JScrollPane scrollPane = new JScrollPane(t);
+				JPanel p = new JPanel();
+				p.add(scrollPane);
+				f.add(p);
+			}
+			
+		});
 		//	b2.addActionListener(new Fnw());
 		add(out);
 	}
 
 
+	private JTable createTable(ResultSet rs, int numberOfColumns) {
+		if(rs == null) {
+			return null;
+		}
 
+		JPanel porto = new JPanel();
+		setLayout(new FlowLayout());
+		porto.add(new JLabel("Information of stock"));
+		String[] columnNames = {"portofolio", "value"};
+		DefaultTableModel model = null;
+		JTable table = null;
+		int rowcount = 0;
+		
+		try {
+			if (rs.last()) {
+				rowcount = rs.getRow();
+				rs.beforeFirst(); // not rs.first() because the rs.next() below will move on, missing the first element
+			}
+		//	model = new DefaultTableModel(columnNames, rowcount); 
+			
+
+			JScrollPane scrollPane = new JScrollPane(table);
+			porto.add(scrollPane);
+			Object[][] data = new Object[rowcount][numberOfColumns];
+			int j = 0;
+			while (rs.next()) {
+				Object[] rowData = new Object[numberOfColumns];
+				System.out.println(rowData.length);
+				for(int i  = 0; i < rowData.length; i++) {
+					rowData[i] = rs.getObject(i+1);
+				}
+				data[j] = rowData;
+				j++;
+			}
+			table = new JTable(data, columnNames);
+			table.setFillsViewportHeight(true);
+			return table;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return table;
+	}
+
+	private JFrame showNewFrame(String title) {
+		JFrame f = new JFrame();
+		f.setTitle(title);
+		f.setSize(400, 500);
+		f.setLocationRelativeTo(null);
+		f.setVisible(true);
+		return f;
+	}
 
 	public class TotalReturn implements ActionListener{
 		public void actionPerformed(ActionEvent arg0) {
