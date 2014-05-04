@@ -22,6 +22,8 @@ public class Transaction extends JPanel{
 		out1.add(new JLabel("individual:"));
 		JTextField indiv = new JTextField(8);
 		out1.add(indiv);
+		JButton trans = new JButton("transaction");
+		out1.add(trans);
 		
 		JPanel out2 = new JPanel(new GridLayout(0, 4));
 		out2.add(new JLabel("stock"));
@@ -42,18 +44,12 @@ public class Transaction extends JPanel{
 		JRadioButton sell = new JRadioButton("sell");
 		out3.add(buy);
 		out3.add(sell);
+		
 		JButton partici = new JButton("majority participants");
 		JButton tnw = new JButton("total net worth");
 		out3.add(partici);
 		out3.add(tnw);
-//		JPanel out4 = new JPanel();
-//		out4.add(new JLabel("portofolio:"));
-//		JTextField portfolio = new JTextField(8);
-//		out4.add(portfolio);
-//		out4.add(new JLabel("amount:"));
-//		JTextField amountP = new JTextField(8);
-//		out4.add(amountP);
-		
+
 		JPanel out = new JPanel(new GridLayout(0, 1));
 		out.add(p1);
 		out.add(out1);

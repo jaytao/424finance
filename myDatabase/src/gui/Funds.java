@@ -27,34 +27,31 @@ public class Funds extends JPanel{
 	private JTextArea textArea;
 
 	Company portfolio;
-	
+
 	public Funds() throws IOException {
-	
-    //    buttonPane.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
- 
-		
+
 		JPanel out1 = new JPanel(new GridLayout(0,1));
-		
+
 		JPanel p1 = new JPanel();
 		JLabel l1= new JLabel("Porfolios");
 		l1.setFont(new Font("Serif", Font.BOLD, 20));
 		p1.add(l1);
 		out1.add(p1);
-		
+
 		//second panel
 		JPanel fund = new JPanel();
 		JTextField port = new JTextField(7);
 		JTextField startDate = new JTextField(7);
 		JTextField endDate = new JTextField(7);
-		
+
 		fund.add(new JLabel("portofolio:"));
 		fund.add(port);
 		fund.add(new JLabel("startDate:"));
 		fund.add(startDate);
 		fund.add(new JLabel("endDate:"));
 		fund.add(endDate);
-		
-		
+
+
 		//third panel
 		JPanel p2 = new JPanel(new GridLayout(0,4));
 		JButton retB = new JButton("returnValue");
@@ -71,43 +68,21 @@ public class Funds extends JPanel{
 		out.add(p1);
 		out.add(fund);
 		out.add(p2);
-		
-		
+
+
 		b1.addActionListener(new TotalReturn());
-		b2.addActionListener(new Fnw());
+		//	b2.addActionListener(new Fnw());
 		add(out);
 	}
-			
-		
-	
-	
+
+
+
+
 	public class TotalReturn implements ActionListener{
 		public void actionPerformed(ActionEvent arg0) {
-			
+
 		}
 	}
-	
-	public class Fnw implements ActionListener{
-		@Override
-		public void actionPerformed(ActionEvent arg0) {
-			
-//			String text = textField.getText();
-//			try {
-//				ResultSet result = command.select(text);
-//				String re = "";
-//				while(result.next()) {
-//					System.out.println("hello");	
-//					String s = result.getString("age");
-//					re += s; 
-//				}
-//				re = text + "  " + re;
-//				textField.setText(re);
-//			} catch (SQLException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//		}
-		
-	}
-}
+
+
 }

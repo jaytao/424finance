@@ -118,43 +118,21 @@ public class Company extends JPanel{
 		outer.add(out2);
 		add(outer, BorderLayout.NORTH);
 		top25.addActionListener(new Stock25Listener());
-
-		//======================================		
-
-
-		//		quoteInformation = new JTextField(10);
-		//	quoteInformation.setEditable(false);
-		//		display.add(quoteInformation);
-
-		//	display.setAlignmentX(Component.LEFT_ALIGNMENT);
-		//	add(display, BorderLayout.WEST);
-		//		b.addActionListener(new Stock25Listener());
-
-
-		//		//	readData.addActionListener(new MyButtonListener());
-
-
-
-
-
-
-
 	}
 
-	private void showNewFrame(String title, String output) {
+	private JFrame showNewFrame(String title, Object output) {
 		JFrame f = new JFrame();
 		f.setTitle(title);
 		f.setSize(400, 500);
 		f.setLocationRelativeTo(null);
 		JPanel showResult = new JPanel();
 		JTextArea area = new JTextArea();
-		area.setText(output);
+		area.setText((String)output);
 		JScrollPane scroll = new JScrollPane(area);
 		showResult.add(scroll);
-
 		f.add(showResult);
 		f.setVisible(true);
-
+		return f;
 	}
 
 
@@ -164,29 +142,9 @@ public class Company extends JPanel{
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
 
-			//			if(arg0.getSource() instanceof JButton) {
-			//				showNewFrame();
-			//			}
 		}
 
 
-
-
-		//			String text = textField.getText();
-		//			try {
-		//				ResultSet result = command.select(text);
-		//				String re = "";
-		//				while(result.next()) {
-		//					System.out.println("hello");	
-		//					String s = result.getString("age");
-		//					re += s; 
-		//				}
-		//				re = text + "  " + re;
-		//				textArea.setText(re);
-		//			} catch (SQLException e) {
-		//				// TODO Auto-generated catch block
-		//				e.printStackTrace();
-		//			}
 	}
 
 }

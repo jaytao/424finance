@@ -18,20 +18,10 @@ public class Frame {
 		int width = 1080, height = 800;
 		frame.setSize(new Dimension(width, height)); 
 		frame.setLayout(new GridLayout(0, 2, 20, 50));
-	//	JPanel p = new JPanel(new GridLayout(0, 1, 10, 10));
-	//	JScrollPane scroll = new JScrollPane(p);
-//		p.add(new Company(500, 250));
-//		p.add(new Funds());
-//		p.add(new Individual());
-		//panel.portofolio();
 		frame.add(new Company(50,60));
 		frame.add(new Transaction());
 		frame.add(new Funds());
 		frame.add(new Individual());
-		
-		
-	
-		
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		int upperLeftCornerX = (screenSize.width - frame.getWidth()) / 2;
 		int upperLeftCornerY = (screenSize.height - frame.getHeight()) / 2;
