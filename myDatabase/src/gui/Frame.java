@@ -1,23 +1,37 @@
 package gui;
 
 import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.io.IOException;
 
 import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.WindowConstants;
 
 public class Frame {
 	private static void createFrame() throws IOException {
 		JFrame.setDefaultLookAndFeelDecorated(true);
-		JFrame frame = new JFrame("Stock information");
-		int width = 1000, height = 900;
+		JFrame frame = new JFrame("Stock");
+		int width = 1080, height = 800;
 		frame.setSize(new Dimension(width, height)); 
-	//	frame.setContentPane(new Quote());
-		Panel panel = new Panel(width, height);
-		panel.getRateOfReturn();
-		panel.portofolio();
-		frame.setContentPane(panel);
+		frame.setLayout(new GridLayout(0, 2, 20, 50));
+	//	JPanel p = new JPanel(new GridLayout(0, 1, 10, 10));
+	//	JScrollPane scroll = new JScrollPane(p);
+//		p.add(new Company(500, 250));
+//		p.add(new Funds());
+//		p.add(new Individual());
+		//panel.portofolio();
+		frame.add(new Company(50,60));
+		frame.add(new Transaction());
+		frame.add(new Funds());
+		frame.add(new Individual());
+		
+		
+	
+		
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		int upperLeftCornerX = (screenSize.width - frame.getWidth()) / 2;
 		int upperLeftCornerY = (screenSize.height - frame.getHeight()) / 2;
@@ -27,7 +41,6 @@ public class Frame {
 	}
 	
 	public static void main(String[] args) {
-		System.out.println("==================");
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				try {
