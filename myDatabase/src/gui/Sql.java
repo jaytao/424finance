@@ -5,10 +5,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import db.Queries;
+
 public class Sql {
 	Connection connection = null;
 	PreparedStatement statement = null;
-
+	String lastDate = "2013-12-31";
+	String firstDate = "2005-01-03";
 	public Sql() {
 
 	}
@@ -80,13 +83,15 @@ public class Sql {
 
 	public ResultSet stockTop25Return(Connection connection) {
 		String query = "select t Ticker, q1.time, q1.adjclose, q2.time, q2.adjclose, " +
-				"q2.adjclose/q1.adjclose ror from quotes q1, quotes q2, " +
+				"pow(q2.adjclose/q1.adjclose,1/9)-1 AnnualRoR from quotes q1, quotes q2, " +
 				"(select distinct ticker t from quotes) a where q1.ticker = q2.ticker " +
-				"and q1.ticker = t and q1.time='2005-01-03' and q2.time='2012-10-12' " +
+				"and q1.ticker=t and q1.time=? and q2.time=? " +
 				"order by ror desc limit 25;";
 		try {
-			ResultSet rs;
-			rs = connection.prepareStatement(query).executeQuery();
+			PreparedStatement st = connection.prepareStatement(query);
+			st.setString(1, firstDate);
+			st.setString(2, lastDate);
+			ResultSet rs = st.executeQuery();
 			return rs;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -106,5 +111,31 @@ public class Sql {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	public double portfolioWorthEnd(Connection connection, String fund){
+		String query = "select a.ticker, a.d, c.percent, b.value, c.percent * b.value from " +
+				"(select fund, ticker, max(date_execute) d from owns where fund=? group by ticker) a, " +
+				"(select * from owns) c, (select * from value) b " +
+				"where b.fund=a.fund and a.d=b.time and c.fund=a.fund and c.ticker=a.ticker and c.date_execute=a.d;";
+		
+		try{
+			PreparedStatement st = connection.prepareStatement(query);
+			st.setString(1, fund);
+			ResultSet rs = st.executeQuery();
+			
+			double totalWorth = 0;
+			while (rs.next()){
+				String ticker = rs.getString(1);
+				String date = rs.getString(2);
+				double amount = rs.getDouble(5);
+				
+				totalWorth += (amount*Queries.stockAppreciation(connection, ticker, date, lastDate));
+			}
+			return totalWorth;
+		} catch (SQLException e){
+			e.printStackTrace();
+		}
+		return -1;
 	}
 }
