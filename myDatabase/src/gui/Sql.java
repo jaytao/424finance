@@ -138,4 +138,33 @@ public class Sql {
 		}
 		return -1;
 	}
+	
+	public double portfolioContainsPercent(Connection connection, String fund, String end){
+		//this query returns the percent of fund that is owned by individuals
+		String query = "select sum(percent) from " +
+				"(select individual, portfolio, max(date_order) d from contains " +
+				"where portfolio=? and date_order<=? group by individual) a, " +
+				"(select * from contains) c " +
+				"where c.portfolio=a.portfolio and c.individual=a.individual and c.date_order=a.d;";
+		try{
+			PreparedStatement st = connection.prepareStatement(query);
+			st.setString(1, fund);
+			st.setString(2, end);
+			ResultSet rs = st.executeQuery();
+			
+			return rs.getDouble(1);
+			
+		} catch (SQLException e){
+			e.printStackTrace();
+		}
+		return -1;
+	}
+	
+	//gets the portofolio total rate of return
+	public double portfolioRateOfReturn(Connection connection, String fund, String begin, String end){
+		double start = Queries.getFundTotalValue(connection, fund, begin);
+		double total = portfolioWorthEnd(connection, fund);
+		double contains = portfolioContainsPercent(connection, fund, end);
+		return (total*(1-contains))/start;
+	}
 }
