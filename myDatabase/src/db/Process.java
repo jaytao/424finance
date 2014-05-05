@@ -18,21 +18,23 @@ public class Process {
 	Connection connection = null;
 	PreparedStatement statement = null;
 
-	 String csvFile = "/home/xwang125/Class/cmsc424/project/script1.csv";
-	//String csvFile = "/home/jeff/424/424finance/script1.csv";
+	 //String csvFile = "/home/xwang125/Class/cmsc424/project/script1.csv";
+	String csvFile = "/home/jeff/424/424finance/script1.csv";
 
 	public Process() throws IOException {
 
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			connection = DriverManager.getConnection("jdbc:mysql://Localhost/stocks", "root", "dingding1016");
+			connection = DriverManager.getConnection("jdbc:mysql://Localhost/stocks", "root", "toor");
 		} catch (Exception e) {
 			System.out.println("Error Occured While connecting " + e);
 		}
+		
 		fillActivity();
 		executeActions();
 	}
 
+	//reads the actions from the activity table in the database and executes the transactions
 	public void executeActions() {
 		ResultSet result = Queries.getActivity(connection);
 		try {
@@ -60,7 +62,8 @@ public class Process {
 			e.printStackTrace();
 		}
 	}
-
+	
+	//parses csv file and puts the info into the activity table
 	public void fillActivity() {
 
 		BufferedReader br = null;
@@ -215,11 +218,14 @@ public class Process {
 			if (value < 0) {
 				return;
 			}
+			
+			//increment the fund value
 			value += amount;
 			double percent = amount / value;
 			Queries.insertContains(connection, fund, obj, percent, date);
 			Queries.insertValue(connection, obj, value, date);
 
+			//subtract the amount bought from the cash table
 			double cash = Queries.getCash(connection, fund, exeDate);
 			double fundValue = Queries.getFundTotalValue(connection, fund, date);
 			cash -= amount;
@@ -243,16 +249,20 @@ public class Process {
 			double percent = Queries.getIndividualFundPercent(connection, fund, obj1);
 			obj1Value = percent*fundValue;
 		}
+		
+		//execute a sell
 		sell(fund,obj1,date);
+		
+		//execute the buy for the amount previously calculated
 		buy(fund,obj2,obj1Value,date);
 	}
 
-//	public static void main(String[] args) throws SQLException, IOException, ParseException {
-//		Process testBlob = new Process();
-//
-//		Connection c = Utils.connectToSQL("root", "dingding1016");
-//		// System.out.println(Queries.getCash(c, "fund_1", "2013-01-02"));
-//
-//	}
+	public static void main(String[] args) throws SQLException, IOException, ParseException {
+		//Process testBlob = new Process();
+		
+		//Connection c = Utils.connectToSQL("root", "dingding1016");
+		// System.out.println(Queries.getCash(c, "fund_1", "2013-01-02"));
+
+	}
 
 }

@@ -149,7 +149,7 @@ public class Queries {
 	}
 
 	private static final String VALUE_FUND = "select * from value where fund=? and time<=? order by time desc;";
-
+	
 	public static double getFundTotalValue(Connection connection, String fund, String date){
 		PreparedStatement st;
 		try {
