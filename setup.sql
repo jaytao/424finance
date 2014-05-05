@@ -66,5 +66,5 @@ CREATE TABLE value(
     PRIMARY KEY(fund, time)
 );
 
-LOAD DATA INFILE "/home/jeff/424/424finance/quotes.csv" INTO TABLE quotes COLUMNS TERMINATED BY ',' escaped by '"' lines terminated by '\n' ignore 1 lines;
+LOAD DATA INFILE "/home/xwang125/Class/cmsc424/project/424finance/quotes.csv" INTO TABLE quotes COLUMNS TERMINATED BY ',' escaped by '"' lines terminated by '\n' ignore 1 lines;
 

@@ -21,3 +21,46 @@ select a.adjclose / b.adjclose from
     (select * from fund, value where fund.name = value.fund order by time desc limit 1) a,
     (select * from fund, value where fund.name = value.fund order by time asc limit 1) b
 where a. 
+
+#annualized rate of return(not finished yet)
+select sum(owns.percent * value.value), owns.ticker from 
+(select owns.percent, value.value, owns.ticker from owns, value, quotes 
+ where owns.fund = value.fund 
+        and quotes.ticker = owns.ticker 
+)
+ group by owns.ticker
+ 
+ 
+#Rank the portfolios by final net worth (cash, plus value of all stocks and portfolios held).
+
+create view temp as 
+(select fund,  max(time) as mt from value group by fund order by value);
+select temp.fund, value.value from temp, value where temp.fund = value.fund and temp.mt = value.time   
+order by value.value;
+
+
+
+
++---------+-------------+
+| fund    | value       |
++---------+-------------+
+| ind_2   |     6100.17 |
+| ind_1   |     7470.93 |
+| ind_3   |    31335.88 |
+| fund_2  |  1939809.85 |
+| fund_9  |  2541935.41 |
+| fund_3  |  3400709.99 |
+| fund_4  |  7129712.17 |
+| fund_8  |  2368887.63 |
+| fund_10 |  1286206.91 |
+| fund_7  | 30584782.76 |
+| fund_6  |  2638710.46 |
+| fund_5  |  3032944.62 |
+| fund_1  | 17964481.20 |
++---------+-------------+
+
+
+
+      
+      
+

@@ -16,14 +16,23 @@ public class Transaction extends JPanel{
 		JLabel l1= new JLabel("transaction");
 		l1.setFont(new Font("Serif", Font.BOLD, 20));
 		p1.add(l1);
+		JButton output = new JButton("output file");
+		p1.add(output);
 	
 		
 		JPanel out1 = new JPanel();
+		JButton uploadFile = new JButton("uploadFile");
+		out1.add(uploadFile);
+		out1.add(new JLabel("or"));
+		JButton trans = new JButton("input");
+		out1.add(trans);
 		out1.add(new JLabel("individual:"));
 		JTextField indiv = new JTextField(8);
 		out1.add(indiv);
-		JButton trans = new JButton("transaction");
-		out1.add(trans);
+		
+		
+		
+		
 		
 		JPanel out2 = new JPanel(new GridLayout(0, 4));
 		out2.add(new JLabel("stock"));

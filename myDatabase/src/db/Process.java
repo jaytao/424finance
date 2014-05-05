@@ -247,12 +247,12 @@ public class Process {
 		buy(fund,obj2,obj1Value,date);
 	}
 
-//	public static void main(String[] args) throws SQLException, IOException, ParseException {
-//		Process testBlob = new Process();
-//
-//		Connection c = Utils.connectToSQL("root", "dingding1016");
-//		// System.out.println(Queries.getCash(c, "fund_1", "2013-01-02"));
-//
-//	}
+	public static void main(String[] args) throws SQLException, IOException, ParseException {
+		Process testBlob = new Process();
+
+		//Connection c = Utils.connectToSQL("root", "dingding1016");
+		// System.out.println(Queries.getCash(c, "fund_1", "2013-01-02"));
+
+	}
 
 }
