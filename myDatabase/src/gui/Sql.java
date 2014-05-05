@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import db.Queries;
+import db.Utils;
 
 public class Sql {
 	Connection connection = null;
@@ -100,19 +101,6 @@ public class Sql {
 		return null;
 	}
 	
-	public ResultSet stockTop25Safe(Connection connection){
-		String query = "select ticker, std(adjclose) std from quotes group by ticker order by std asc";
-		try {
-			ResultSet rs;
-			rs = connection.prepareStatement(query).executeQuery();
-			return rs;
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
-	}
-	
 	public double portfolioWorthEnd(Connection connection, String fund){
 		String query = "select a.ticker, a.d, c.percent, b.value, c.percent * b.value from " +
 				"(select fund, ticker, max(date_execute) d from owns where fund=? group by ticker) a, " +
@@ -164,7 +152,15 @@ public class Sql {
 	public double portfolioRateOfReturn(Connection connection, String fund, String begin, String end){
 		double start = Queries.getFundTotalValue(connection, fund, begin);
 		double total = portfolioWorthEnd(connection, fund);
+		total += Queries.getCash(connection, fund, end);
 		double contains = portfolioContainsPercent(connection, fund, end);
 		return (total*(1-contains))/start;
+	}
+	
+	
+	public static void main(String args[]){
+		Sql s = new Sql();
+		double a = s.portfolioWorthEnd(Utils.connectToSQL("root", "toor"), "fund_10");
+		System.out.println(a);
 	}
 }
