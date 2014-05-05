@@ -6,16 +6,23 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import db.Queries;
+import db.Utils;
 
 public class Sql {
-	Connection connection = null;
+	static Connection connection = null;
 	PreparedStatement statement = null;
+
 	String lastDate = "2013-12-31";
 	String firstDate = "2005-01-03";
 	public Sql() {
 
 	}
 
+//	public static void main(String[] args) {
+//		connection = Utils.connectToSQL("root", "dingding1016"); 
+//		Sql sql = new Sql();
+//		sql.rankPortROR(connection);
+//	}
 	public double stockQuote(Connection connection, String stock, String date) {
 		String input = "select adjclose from quotes where ticker = ? and time = ?";
 		try {
@@ -37,24 +44,37 @@ public class Sql {
 	}
 
 	public ResultSet portofolioTotalNetWorth(Connection connection, String startdate, String endDate) {
-		String drop = "drop view temp";
-		String input = "create view temp as (select fund,  max(time) as mt from value group by fund order by value);";
-		String select = "select temp.fund, value.value from temp, value where temp.fund = value.fund and temp.mt = value.time\n "
-				+ "order by value.value; ";
-		try {
-			statement = connection.prepareStatement(drop);
-			int i = statement.executeUpdate();
-			statement = connection.prepareStatement(input);
-			int j = statement.executeUpdate();
 
-			statement = connection.prepareStatement(select);
-			ResultSet result = statement.executeQuery();
-			return result;
+		String s1 = "select name from fund where isindividual = 0";
+		String s2 = "create table temp(fund varchar(10), value dec(15, 12))";
+		//	String drop = "drop view temp";
+		String input = "create view temp as (select fund,  max(time) as mt from value group by fund order by value);";
+		try {
+			PreparedStatement statement1 = connection.prepareStatement(s1);
+			PreparedStatement statement2 = connection.prepareStatement(s2);
+			statement2.executeUpdate();
+			ResultSet rt = statement1.executeQuery();
+			while(rt.next()) {
+				String fundName = rt.getString("name");
+				double values = Utils.fundCurrentValue(connection, fundName, "2014-01-01");
+				String s3 = "insert into temp values(?,?)";
+				PreparedStatement statement3 = connection.prepareStatement(s3);
+				statement3.setString(1, fundName);
+				statement3.setDouble(2, values);
+				statement3.executeUpdate();
+				
+			}
+			String s4 = "select * from temp order by value";
+			PreparedStatement statement4 = connection.prepareStatement(s4);
+			ResultSet rt2 = statement4.executeQuery();
+			return rt2;
+			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
+
 	}
 
 	public double stockRateOfReturn(Connection connection, String ticker, String begin, String end) {
@@ -99,7 +119,7 @@ public class Sql {
 		}
 		return null;
 	}
-	
+
 	public ResultSet stockTop25Safe(Connection connection){
 		String query = "select ticker, std(adjclose) std from quotes group by ticker order by std asc";
 		try {
@@ -112,24 +132,24 @@ public class Sql {
 		}
 		return null;
 	}
-	
+
 	public double portfolioWorthEnd(Connection connection, String fund){
 		String query = "select a.ticker, a.d, c.percent, b.value, c.percent * b.value from " +
 				"(select fund, ticker, max(date_execute) d from owns where fund=? group by ticker) a, " +
 				"(select * from owns) c, (select * from value) b " +
 				"where b.fund=a.fund and a.d=b.time and c.fund=a.fund and c.ticker=a.ticker and c.date_execute=a.d;";
-		
+
 		try{
 			PreparedStatement st = connection.prepareStatement(query);
 			st.setString(1, fund);
 			ResultSet rs = st.executeQuery();
-			
+
 			double totalWorth = 0;
 			while (rs.next()){
 				String ticker = rs.getString(1);
 				String date = rs.getString(2);
 				double amount = rs.getDouble(5);
-				
+
 				totalWorth += (amount*Queries.stockAppreciation(connection, ticker, date, lastDate));
 			}
 			return totalWorth;
@@ -138,7 +158,7 @@ public class Sql {
 		}
 		return -1;
 	}
-	
+
 	public double portfolioContainsPercent(Connection connection, String fund, String end){
 		//this query returns the percent of fund that is owned by individuals
 		String query = "select sum(percent) from " +
@@ -151,20 +171,56 @@ public class Sql {
 			st.setString(1, fund);
 			st.setString(2, end);
 			ResultSet rs = st.executeQuery();
-			
-			return rs.getDouble(1);
-			
+			if (rs.next()) {
+				return rs.getDouble(1);
+			}
+
 		} catch (SQLException e){
 			e.printStackTrace();
 		}
 		return -1;
 	}
-	
+
 	//gets the portofolio total rate of return
 	public double portfolioRateOfReturn(Connection connection, String fund, String begin, String end){
 		double start = Queries.getFundTotalValue(connection, fund, begin);
 		double total = portfolioWorthEnd(connection, fund);
+		total += Queries.getCash(connection, fund, end);
 		double contains = portfolioContainsPercent(connection, fund, end);
+		System.out.println(fund);
+		System.out.println(start);
+		System.out.println(total);
+		System.out.println(contains);
 		return (total*(1-contains))/start;
+	}
+
+	public void rankPortROR(Connection connection) {
+		String s1 = "select name from fund where isindividual = '0'";
+		//	String s11 = "drop table rankPortROR";
+		String s2 = "create table rankPortROR(fund varchar(10), rateOfReturn dec(15, 12));";
+		try {
+			PreparedStatement statement1 = connection.prepareStatement(s1);
+			PreparedStatement statement2 = connection.prepareStatement(s2);
+			ResultSet result1 = statement1.executeQuery();
+			statement2.executeUpdate();
+			while(result1.next()) {
+				String fundName = result1.getString("name");
+				double ror = portfolioRateOfReturn(connection, fundName, "2005-01-01", "2013-12-31");
+				String s3 = "insert into rankPortROR values(?,?)";
+				PreparedStatement statement3 = connection.prepareStatement(s3);
+				statement3.setString(1, fundName);
+				statement3.setDouble(2, ror);
+				statement3.executeUpdate();
+			}
+
+			//			String s4 = "select * from rankPortROR order by rateOfReturn";
+			//			PreparedStatement statement4 = connection.prepareStatement(s4);
+			//			statement4.
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 }

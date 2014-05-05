@@ -1,5 +1,6 @@
 package db;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -50,6 +51,7 @@ public class Queries {
 			st.executeUpdate();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
+			System.out.println(percent);
 			e.printStackTrace();
 		}
 	}
@@ -159,6 +161,7 @@ public class Queries {
 
 			ResultSet result = st.executeQuery();
 			if (!result.next()){
+
 				return -1;
 			}
 			return result.getDouble("value");
