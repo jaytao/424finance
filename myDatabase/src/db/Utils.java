@@ -44,6 +44,7 @@ public class Utils {
 		return null;
 	}
 
+	//at time date, how much is fund worth if we appreciate all stocks to present
 	public static double fundCurrentValue(Connection connection, String fund, String date) {
 		try {
 			HashMap<String, Double> stockAmount = new HashMap<String, Double>();
@@ -79,6 +80,7 @@ public class Utils {
 		return -1;
 	}
 	
+	//if a ind sells their share, then it increases the percent of fund other individuals own
 	public static void updateContainsSell(Connection connection, String ind, String fund, String date){
 		double modifier = 1.0 - Queries.getIndividualFundPercent(connection, ind, fund);
 		
