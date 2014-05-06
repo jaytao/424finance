@@ -213,14 +213,7 @@ public class Sql {
 		return (total*(1-contains))/start;
 	}
 
-	public ResultSet rankPortROR(Connection connection, int i) {
-		
-		String s1 = "select name from fund where isindividual = ? ";
-		if(contains == -1.0) {
-			return -100.0;
-		}
-		return (total*(1-contains))/start;
-	}
+
 	
 	public ResultSet mysteryQuery(Connection connection){
 		String query = "select c.individual, c.portfolio, c.date_order, c.percent from " +
@@ -228,7 +221,9 @@ public class Sql {
 				"contains c where c.individual=a.individual and c.portfolio=a.portfolio and " +
 				"c.date_order=a.latest_d order by c.percent limit 1;";
 		
-		String insert = "insert into mystery values (?,?) on duplicate key update";
+		String create = "create table mystery(indi varchar(10), value DEC(50, 20))";
+		           
+		String insert = "insert ignore into mystery values (?,?) ";
 		
 		String mystery = "select * from mystery order by value desc;";
 		
@@ -237,10 +232,12 @@ public class Sql {
 		ResultSet rsFunds = Queries.getFund(connection);
 		try {
 			PreparedStatement stQuery = connection.prepareStatement(query);
+			PreparedStatement stCreate = connection.prepareStatement(create);
 			PreparedStatement stRemove = connection.prepareStatement(remove);
 			PreparedStatement stInsert = connection.prepareStatement(insert);
 			PreparedStatement stMystery = connection.prepareStatement(mystery);
 			
+			stCreate.executeUpdate();
 			stRemove.executeUpdate();
 			
 			//go through all funds and run query
@@ -272,8 +269,8 @@ public class Sql {
 		return null;
 	}
 			
-	public ResultSet rankPortROR(Connection connection) {
-		String s1 = "select name from fund where isindividual = '0'";
+	public ResultSet rankPortROR(Connection connection, int i) {
+		String s1 = "select name from fund where isindividual = ? ";
 		String s11 = "drop table rankPortROR";
 		String s2 = "create table rankPortROR(fund varchar(10), rateOfReturn dec(50, 25));";
 		try {
@@ -281,12 +278,22 @@ public class Sql {
 			statement1.setInt(1, i);
 			PreparedStatement statement11 = connection.prepareStatement(s11);
 			PreparedStatement statement2 = connection.prepareStatement(s2);
+			
 			ResultSet result1 = statement1.executeQuery();
 			statement11.executeUpdate();
 			statement2.executeUpdate();
 			while(result1.next()) {
 				String fundName = result1.getString("name");
-				double ror = portfolioRateOfReturn(connection, fundName, "2005-01-01", "2013-12-31");
+				String startD = "select min(time) from value where fund = ?;";
+				PreparedStatement state = connection.prepareStatement(startD);
+				state.setString(1, fundName);
+				ResultSet rst = state.executeQuery();
+				String time = "";
+				if(rst.next()) {
+					time = rst.getString("min(time)");
+				}
+				System.out.println(time);
+				double ror = portfolioRateOfReturn(connection, fundName, time, "2013-12-31");
 				String s3 = "insert into rankPortROR values(?,?)";
 				PreparedStatement statement3 = connection.prepareStatement(s3);
 				statement3.setString(1, fundName);
@@ -305,28 +312,13 @@ public class Sql {
 		return null;
 	}
 
-//	public ResultSet rankIndivROR(Connection connection) {
-//		String s1 = "select action, col_1, col_2 from activity where action = 'individual';";
-//		PreparedStatement statement1;
-//		try {
-//			statement1 = connection.prepareStatement(s1);
-//			ResultSet rs1 = statement1.executeQuery();
-//			while(rs1.next()) {
-//				String indiv = rs1.getString("col_1");
-//				double cash = rs1.getDouble("col_2");
-//				double worthEnd = portfolioWorthEnd(connection, indiv);
-//				double indivROR = worthEnd/cash;
-//			}
-//		} catch (SQLException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		
-//	}
-
-	public static void main(String args[]){
-		Sql s = new Sql();
-		double a = s.portfolioWorthEnd(Utils.connectToSQL("root", "toor"), "fund_10");
-		System.out.println(a);
+	public ResultSet compareSet(String stock1, String stock2) {
+		return null;
 	}
+
+//	public static void main(String args[]){
+//		Sql s = new Sql();
+//		double a = s.portfolioWorthEnd(Utils.connectToSQL("root", "toor"), "fund_10");
+//		System.out.println(a);
+//	}
 }

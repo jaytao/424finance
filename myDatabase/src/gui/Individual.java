@@ -20,6 +20,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
@@ -29,7 +30,7 @@ import java.sql.Connection;
 import db.Utils;
 
 public class Individual extends JPanel{
-
+	JTextField port, startDate, endDate;
 	private Connection connection;
 	public Individual() {
 		connection = Utils.connectToSQL("root", "dingding1016"); 
@@ -43,9 +44,9 @@ public class Individual extends JPanel{
 
 		//second panel
 		JPanel fund = new JPanel();
-		JTextField port = new JTextField(7);
-		JTextField startDate = new JTextField(7);
-		JTextField endDate = new JTextField(7);
+		port = new JTextField(7);
+		startDate = new JTextField(7);
+		endDate = new JTextField(7);
 
 		fund.add(new JLabel("Individual:"));
 		fund.add(port);
@@ -73,6 +74,52 @@ public class Individual extends JPanel{
 		outfin.add(out);
 		add(outfin);
 
+		retB.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent arg0) {
+
+				Sql sql = new Sql();
+				String portName = port.getText();
+				String startD = startDate.getText();
+				String endD = endDate.getText();
+				Double rt = sql.portfolioRateOfReturn(connection, portName, startD, endD);
+				if(rt < -99) {
+					popError();
+				}
+				else {
+					JFrame f = showNewFrame("rate of return");
+					JPanel p = new JPanel();
+					JTextArea area = new JTextArea();
+					area.setText(rt.toString());
+					p.add(area);
+					f.add(p);
+				}
+			}
+
+		});
+		
+		worthB.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent arg0) {
+				Sql sql = new Sql();
+				String portName = port.getText();
+				String startD = startDate.getText();
+				String endD = endDate.getText();
+				Double value = 0.0;
+				if(endD.compareTo("2013-12-31") >= 0) {
+					value = sql.portfolioWorthEnd(connection, portName);
+				}
+				else {
+					value = sql.portfolioWorth(connection, portName, endD);
+				}
+
+				JFrame f = showNewFrame("net worth");
+				JPanel p = new JPanel();
+				JTextArea area = new JTextArea();
+				area.setText(value.toString());
+				p.add(area);
+				f.add(p);
+			}
+		});
+		
 		b1.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -152,5 +199,16 @@ public class Individual extends JPanel{
 		return f;
 	}
 
-
+	private JFrame popError() {
+		JFrame f = new JFrame();
+		f.setTitle("Error!");
+		f.setSize(200, 200);
+		f.setLocationRelativeTo(null);
+		JPanel showResult = new JPanel();
+		JTextArea area = new JTextArea("No such Record!");
+		showResult.add(area);
+		f.add(showResult);
+		f.setVisible(true);
+		return f;
+	}
 }

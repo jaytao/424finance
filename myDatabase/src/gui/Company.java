@@ -30,6 +30,7 @@ public class Company extends JPanel{
 
 	private JTable table;
 	private JTextField textField, quoteInformation, stockName, start, end;
+	private JTextField stock1, stock2;
 	Process command;
 	private int width, height;
 	private Utils utility = new Utils();
@@ -120,9 +121,11 @@ public class Company extends JPanel{
 		JButton compareB = new JButton("compare");
 		compare.add(compareB);		
 		compare.add(new JLabel("stock1"));
-		compare.add(new JTextField(10));
+		stock1 = new JTextField(10);
+		compare.add(stock1);
+		stock2 = new JTextField(10);
 		compare.add(new JLabel("stock2"));
-		compare.add(new JTextField(10));
+		compare.add(stock2);
 		JButton output = new JButton("output file");
 		compare.add(output);
 		JPanel p3 = new JPanel();
@@ -140,6 +143,7 @@ public class Company extends JPanel{
 		outer.add(display);
 		outer.add(out2);
 		add(outer, BorderLayout.NORTH);
+
 		top25.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				Sql sql = new Sql();
@@ -153,9 +157,15 @@ public class Company extends JPanel{
 			}
 
 		});
+		
 		output.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {
-				
+				Sql sql = new Sql();
+				String stockN1 = stock1.getText();
+				String stockN2 = stock2.getText();
+				ResultSet rt = sql.compareSet(stockN1, stockN2);
+				int i = 0;
+			
 			}
 		});
 	}

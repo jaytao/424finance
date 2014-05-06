@@ -26,15 +26,10 @@ public class Process {
 	Connection connection = null;
 	PreparedStatement statement = null;
 
-	 static String csvFile = "/home/xwang125/Class/cmsc424/project/script4.csv";
-	 // for input file
-	 
-	 	public Process(String csvFile ) throws IOException {
-	  	
-	// String csvFile = "/home/xwang125/Class/cmsc424/project/script1.csv";
-	String csvFile = "/home/jeff/424/424finance/script1.csv";
+	static String csvFile = "/home/xwang125/Class/cmsc424/project/script4.csv";
+	// for input file
 
-	public Process() throws IOException {
+	public Process(String csvFile ) throws IOException {
 
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
@@ -53,7 +48,7 @@ public class Process {
 	public void executeActions() {
 		ResultSet result = Queries.getActivity(connection);
 		DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-		
+
 		try {
 			int i = 0;
 			while (result.next()) {
@@ -63,7 +58,7 @@ public class Process {
 					String fund = result.getString(2);
 					String ticker = result.getString(3);
 					sell(fund, ticker, date);
-					
+
 				} else if (action.equals("buy")) {
 					String fund = result.getString(2);
 					String bought = result.getString(3);
@@ -76,7 +71,7 @@ public class Process {
 					sellbuy(fund, ticker1, ticker2, date);
 				}
 				System.out.println(i + "-" + action + ": " + (double)i/51734);
-			//	System.out.println()
+				//	System.out.println()
 				i++;
 			}
 		} catch (SQLException e) {
@@ -220,7 +215,7 @@ public class Process {
 
 		String exeDate = Utils.findExecuteDate(connection, obj, date);
 
-		
+
 		// stock being bought
 		if (Constants.COMPANIES.contains(obj)) {
 			double fundValue = Queries.getFundTotalValue(connection, fund, date);
@@ -294,3 +289,4 @@ public class Process {
 	}
 
 }
+
