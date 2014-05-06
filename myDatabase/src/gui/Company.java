@@ -123,7 +123,8 @@ public class Company extends JPanel{
 		compare.add(new JTextField(10));
 		compare.add(new JLabel("stock2"));
 		compare.add(new JTextField(10));
-
+		JButton output = new JButton("output file");
+		compare.add(output);
 		JPanel p3 = new JPanel();
 		JButton top25 = new JButton("top 25 stocks in Annualized ROR");
 
@@ -151,6 +152,11 @@ public class Company extends JPanel{
 				f.add(p);
 			}
 
+		});
+		output.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent arg0) {
+				
+			}
 		});
 	}
 
@@ -223,7 +229,7 @@ public class Company extends JPanel{
 		f.setVisible(true);
 		return f;
 	}
-	
+
 	private JFrame popError() {
 		JFrame f = new JFrame();
 		f.setTitle("Error!");

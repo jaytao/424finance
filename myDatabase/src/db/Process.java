@@ -26,6 +26,10 @@ public class Process {
 	Connection connection = null;
 	PreparedStatement statement = null;
 
+	 // for input file
+	 
+	 	public Process(String csvFile ) throws IOException {
+	  	
 	// String csvFile = "/home/xwang125/Class/cmsc424/project/script1.csv";
 	String csvFile = "/home/jeff/424/424finance/script4.csv";
 
@@ -70,6 +74,7 @@ public class Process {
 					sellbuy(fund, ticker1, ticker2, date);
 				}
 				System.out.println(i + "-" + action + ": " + (double)i/51734);
+			//	System.out.println()
 				i++;
 			}
 		} catch (SQLException e) {
@@ -273,10 +278,10 @@ public class Process {
 
 	public static void main(String[] args) throws SQLException, IOException, ParseException {
 
-		Process testBlob = new Process();
 
-//		Connection c = Utils.connectToSQL("root", "toor");
-//		System.out.println(Utils.individualValueInFunds(c, "ind_2", "2013-12-29"));
+
+		//Process testBlob = new Process();
+		//Connection c = Utils.connectToSQL("root", "toor");
 	}
 
 }

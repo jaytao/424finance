@@ -26,13 +26,19 @@ public class Process {
 	Connection connection = null;
 	PreparedStatement statement = null;
 
-	 String csvFile = "/home/xwang125/Class/cmsc424/project/script1.csv";
+	 static String csvFile = "/home/xwang125/Class/cmsc424/project/script4.csv";
+	 // for input file
+	 
+	 	public Process(String csvFile ) throws IOException {
+	  	
+	// String csvFile = "/home/xwang125/Class/cmsc424/project/script1.csv";
+	String csvFile = "/home/jeff/424/424finance/script4.csv";
 
 	public Process() throws IOException {
 
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			connection = DriverManager.getConnection("jdbc:mysql://Localhost/stocks", "root", "dingding1016");
+			connection = DriverManager.getConnection("jdbc:mysql://Localhost/stocks", "root", "toor");
 		} catch (Exception e) {
 			System.out.println("Error Occured While connecting " + e);
 		}
@@ -46,7 +52,6 @@ public class Process {
 	// the transactions
 	public void executeActions() {
 		ResultSet result = Queries.getActivity(connection);
-		DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 		
 		try {
 			int i = 0;
@@ -70,6 +75,7 @@ public class Process {
 					sellbuy(fund, ticker1, ticker2, date);
 				}
 				System.out.println(i + "-" + action + ": " + (double)i/51734);
+			//	System.out.println()
 				i++;
 			}
 		} catch (SQLException e) {
@@ -213,7 +219,6 @@ public class Process {
 
 		String exeDate = Utils.findExecuteDate(connection, obj, date);
 
-		
 		// stock being bought
 		if (Constants.COMPANIES.contains(obj)) {
 			double fundValue = Queries.getFundTotalValue(connection, fund, date);
@@ -273,24 +278,22 @@ public class Process {
 	}
 
 	public static void main(String[] args) throws SQLException, IOException, ParseException {
+
+
 <<<<<<< HEAD
-
-		Process testBlob = new Process();
-
+//		Connection c = Utils.connectToSQL("root", "toor");
+//		System.out.println(Utils.individualValueInFunds(c, "ind_2", "2013-12-29"));
+=======
+		Process testBlob = new Process(csvFile);
 
 		//Connection c = Utils.connectToSQL("root", "dingding1016");
 		// System.out.println(Queries.getCash(c, "fund_1", "2013-01-02"));
 
-=======
+
 		//Process testBlob = new Process();
 		Connection c = Utils.connectToSQL("root", "toor");
-<<<<<<< HEAD
-		//System.out.println(Utils.individualValueInFunds(c, "ind_2", "2013-12-29"));
-		System.out.println(Constants.COMPANIES.size());
-=======
 		System.out.println(Utils.individualValueInFunds(c, "ind_2", "2013-12-29"));
->>>>>>> f594353d083e38a808573f6619ead85ee46f0064
->>>>>>> 34fdef7c08dc785adf3a03e5a6f91bcdd586c43e
+>>>>>>> 8d2cefd827cd1505924b24a39376af7fcbb7f8e2
 	}
 
 }

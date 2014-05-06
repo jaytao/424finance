@@ -4,12 +4,14 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
+import db.Process;
 
 public class Transaction extends JPanel{
 	//for transcaion:
@@ -19,8 +21,7 @@ public class Transaction extends JPanel{
 		JLabel l1= new JLabel("transaction");
 		l1.setFont(new Font("Serif", Font.BOLD, 20));
 		p1.add(l1);
-		JButton output = new JButton("output file");
-		p1.add(output);
+		
 	
 		JPanel file = new JPanel();
 		JButton uploadFile = new JButton("uploadFile");
@@ -39,9 +40,17 @@ public class Transaction extends JPanel{
 		
 		uploadFile.addActionListener(new ActionListener() { 
 			public void actionPerformed(ActionEvent arg0) {
-				
+				String fileName = path.getText(); 
+				try {
+					Process p = new Process(fileName);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}//
 			}
 		});
+		
+		
 		
 		
 		

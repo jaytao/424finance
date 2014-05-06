@@ -27,13 +27,14 @@ import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
 
 import db.Process;
+import db.Queries;
 import db.Utils;
 
 public class Funds extends JPanel{
 	private JTextField textField, port, startDate, endDate;
 	private JTextArea textArea;
 	private Connection connection;
-//	Company portfolio;
+	//	Company portfolio;
 
 	public Funds() throws IOException {
 		connection = Utils.connectToSQL("root", "dingding1016"); 
@@ -41,7 +42,7 @@ public class Funds extends JPanel{
 		JPanel out1 = new JPanel(new GridLayout(0,1));
 
 		JPanel p1 = new JPanel();
-		JLabel l1= new JLabel("Porfolios");
+		JLabel l1= new JLabel("Portofolios");
 		l1.setFont(new Font("Serif", Font.BOLD, 20));
 		p1.add(l1);
 		out1.add(p1);
@@ -77,10 +78,10 @@ public class Funds extends JPanel{
 		out.add(fund);
 		out.add(p2);
 		add(out);
-		
+
 		retB.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {
-				
+
 				Sql sql = new Sql();
 				String portName = port.getText();
 				String startD = startDate.getText();
@@ -98,25 +99,48 @@ public class Funds extends JPanel{
 					f.add(p);
 				}
 			}
-			
+
 		});
-		 
-		
+
+
+		worthB.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent arg0) {
+				Sql sql = new Sql();
+				String portName = port.getText();
+				String startD = startDate.getText();
+				String endD = endDate.getText();
+				Double value = 0.0;
+				if(endD.compareTo("2013-12-31") >= 0) {
+					value = sql.portfolioWorthEnd(connection, portName);
+				}
+				else {
+					value = sql.portfolioWorth(connection, portName, endD);
+				}
+
+				JFrame f = showNewFrame("net worth");
+				JPanel p = new JPanel();
+				JTextArea area = new JTextArea();
+				area.setText(value.toString());
+				p.add(area);
+				f.add(p);
+			}
+		});
+
 		b1.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				JFrame f = showNewFrame("rate of return");
 				Sql sql = new Sql();
-				ResultSet set = sql.rankPortROR(connection);
+				ResultSet set = sql.rankPortROR(connection, 0);
 				JTable t = createTable(set, 2);
 				JScrollPane scrollPane = new JScrollPane(t);
 				JPanel p = new JPanel();
 				p.add(scrollPane);
 				f.add(p);
 			}
-			
+
 		});
-		
+
 		b2.addActionListener(new ActionListener() {
 
 			@Override
@@ -130,9 +154,9 @@ public class Funds extends JPanel{
 				p.add(scrollPane);
 				f.add(p);
 			}
-			
+
 		});
-				
+
 	}
 
 
@@ -148,14 +172,14 @@ public class Funds extends JPanel{
 		DefaultTableModel model = null;
 		JTable table = null;
 		int rowcount = 0;
-		
+
 		try {
 			if (rs.last()) {
 				rowcount = rs.getRow();
 				rs.beforeFirst(); // not rs.first() because the rs.next() below will move on, missing the first element
 			}
-		//	model = new DefaultTableModel(columnNames, rowcount); 
-			
+			//	model = new DefaultTableModel(columnNames, rowcount); 
+
 
 			JScrollPane scrollPane = new JScrollPane(table);
 			porto.add(scrollPane);
@@ -177,7 +201,7 @@ public class Funds extends JPanel{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		return table;
 	}
 
