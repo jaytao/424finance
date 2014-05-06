@@ -272,7 +272,7 @@ public class Process {
 	public static void main(String[] args) throws SQLException, IOException, ParseException {
 		//Process testBlob = new Process();
 		Connection c = Utils.connectToSQL("root", "toor");
-		System.out.println(Utils.individualValueInFunds(c, "ind_3", "2013-12-31"));
+		System.out.println(Utils.individualValueInFunds(c, "ind_2", "2013-12-29"));
 	}
 
 }

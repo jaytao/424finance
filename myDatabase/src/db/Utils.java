@@ -72,10 +72,11 @@ public class Utils {
 				stockAmount.put(ticker, amount);
 				newFundValue += amount;
 			}
+			
+			newFundValue += Queries.getCash(connection, fund, date);
 			if (newFundValue == 0) {
 				return -1;
 			}
-			newFundValue += Queries.getCash(connection, fund, date);
 			return newFundValue;
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -154,6 +155,10 @@ public class Utils {
 				double percent = rs.getDouble(3);
 				
 				double amount = percent * fundCurrentValue(connection, fund, date);
+				System.out.println(fund);
+				System.out.println(fundCurrentValue(connection, fund,date));	
+				System.out.println(percent);
+				System.out.println(amount);
 				total += amount;
 			}
 			
