@@ -31,6 +31,11 @@ public class Process {
 	 
 	 	public Process(String csvFile ) throws IOException {
 	  	
+	// String csvFile = "/home/xwang125/Class/cmsc424/project/script1.csv";
+	String csvFile = "/home/jeff/424/424finance/script1.csv";
+
+	public Process() throws IOException {
+
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			connection = DriverManager.getConnection("jdbc:mysql://Localhost/stocks", "root", "dingding1016");
@@ -278,7 +283,6 @@ public class Process {
 
 
 		Process testBlob = new Process(csvFile);
-
 
 		//Connection c = Utils.connectToSQL("root", "dingding1016");
 		// System.out.println(Queries.getCash(c, "fund_1", "2013-01-02"));

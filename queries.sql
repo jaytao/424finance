@@ -9,12 +9,18 @@ union
 (select * from quotes where ticker = "ACE" and time >= "2009-01-03" order by time asc limit 1);
 
 #calculate max drop
-select a.ticker, a.adjclose, a.time, b.adjclose, b.time, (a.adjclose - b.adjclose)/a.adjclose "Drop" from quotes a, quotes b 
+select a.ticker, a.adjclose, a.time, b.adjclose, b.time, (a.adjclose - b.adjclose)/a.adjclose "Drop" from quotes a, quotes b
 where a.ticker = b.ticker 
     and a.time < b.time 
     and a.adjclose > b.adjclose 
     and a.ticker = "ACE"
 order by (a.adjclose-b.adjclose)/a.adjclose desc limit 5;
+
+select * from quotes a
+left join quotes b on
+    a.ticker = b.ticker
+    and a.time < b.time
+    and a.adjclose > b.adjclose
 
 #rank portfolio by total return
 select a.adjclose / b.adjclose from

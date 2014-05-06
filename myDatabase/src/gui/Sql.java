@@ -125,18 +125,6 @@ public class Sql {
 		}
 		return null;
 	}
-	public ResultSet stockTop25Safe(Connection connection){
-		String query = "select ticker, std(adjclose) std from quotes group by ticker order by std asc";
-		try {
-			ResultSet rs;
-			rs = connection.prepareStatement(query).executeQuery();
-			return rs;
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
-	}
 
 	public double portfolioWorth(Connection connection, String fund, String date) {
 		String input = "select t.value from" + 
@@ -228,6 +216,64 @@ public class Sql {
 	public ResultSet rankPortROR(Connection connection, int i) {
 		
 		String s1 = "select name from fund where isindividual = ? ";
+		if(contains == -1.0) {
+			return -100.0;
+		}
+		return (total*(1-contains))/start;
+	}
+	
+	public ResultSet mysteryQuery(Connection connection){
+		String query = "select c.individual, c.portfolio, c.date_order, c.percent from " +
+				"(select individual, portfolio, max(date_order) latest_d from contains where portfolio=? group by individual) a, " +
+				"contains c where c.individual=a.individual and c.portfolio=a.portfolio and " +
+				"c.date_order=a.latest_d order by c.percent limit 1;";
+		
+		String insert = "insert into mystery values (?,?) on duplicate key update";
+		
+		String mystery = "select * from mystery order by value desc;";
+		
+		String remove = "delete from mystery";
+		
+		ResultSet rsFunds = Queries.getFund(connection);
+		try {
+			PreparedStatement stQuery = connection.prepareStatement(query);
+			PreparedStatement stRemove = connection.prepareStatement(remove);
+			PreparedStatement stInsert = connection.prepareStatement(insert);
+			PreparedStatement stMystery = connection.prepareStatement(mystery);
+			
+			stRemove.executeUpdate();
+			
+			//go through all funds and run query
+			while(rsFunds.next()){
+				stQuery.setString(1, rsFunds.getString(1));
+				ResultSet rsQuery = stQuery.executeQuery();
+				
+				//if returned a majority individual
+				if(rsQuery.next()){
+					
+					//make sure its not 0
+					if (rsQuery.getDouble(4) > 0.0){
+						String ind = rsQuery.getString(1);
+						double amount = Utils.fundCurrentValue(connection, ind, rsQuery.getString(3));
+						
+						stInsert.setString(1, ind);
+						stInsert.setDouble(2, amount);
+						
+						stInsert.executeUpdate();
+					}
+				}
+			}
+			
+			ResultSet rsMystery = stMystery.executeQuery();
+			return rsMystery;
+		} catch (SQLException e){
+			e.printStackTrace();
+		}
+		return null;
+	}
+			
+	public ResultSet rankPortROR(Connection connection) {
+		String s1 = "select name from fund where isindividual = '0'";
 		String s11 = "drop table rankPortROR";
 		String s2 = "create table rankPortROR(fund varchar(10), rateOfReturn dec(50, 25));";
 		try {

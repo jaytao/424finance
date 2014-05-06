@@ -184,11 +184,10 @@ public class Queries {
 		return null;
 	}
 	
-	private static final String FUND_GET = "select * from fund where name=?;";
-	public static ResultSet getFund(Connection connection, String name){
+	private static final String FUND_GET = "select name from fund";
+	public static ResultSet getFund(Connection connection){
 		try{
 			PreparedStatement st = connection.prepareStatement(FUND_GET);
-			st.setString(1, name);
 			return st.executeQuery();
 		}catch (SQLException e) {
 			// TODO Auto-generated catch block

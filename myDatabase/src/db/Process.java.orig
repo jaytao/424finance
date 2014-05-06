@@ -27,15 +27,18 @@ public class Process {
 	PreparedStatement statement = null;
 
 <<<<<<< HEAD
-	 String csvFile = "/home/xwang125/Class/cmsc424/project/script1.csv";
-//	String csvFile = "/home/jeff/424/424finance/script1.csv";
+	 static String csvFile = "/home/xwang125/Class/cmsc424/project/script4.csv";
+	 // for input file
+	 
+	 	public Process(String csvFile ) throws IOException {
+	  	
 =======
 	// String csvFile = "/home/xwang125/Class/cmsc424/project/script1.csv";
 	String csvFile = "/home/jeff/424/424finance/script1.csv";
->>>>>>> 03a3d0a7b097639278328b65328f7d622881d37d
 
 	public Process() throws IOException {
 
+>>>>>>> 365c674013d1778bb92b03194e2a01d93f1dfc29
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			connection = DriverManager.getConnection("jdbc:mysql://Localhost/stocks", "root", "dingding1016");
@@ -76,6 +79,7 @@ public class Process {
 					sellbuy(fund, ticker1, ticker2, date);
 				}
 				System.out.println(i + "-" + action + ": " + (double)i/51734);
+			//	System.out.println()
 				i++;
 			}
 		} catch (SQLException e) {
@@ -279,22 +283,21 @@ public class Process {
 	}
 
 	public static void main(String[] args) throws SQLException, IOException, ParseException {
+
+
+		Process testBlob = new Process(csvFile);
+
 <<<<<<< HEAD
-
-		Process testBlob = new Process();
-
-
-		//Process testBlob = new Process();
-		
 
 		//Connection c = Utils.connectToSQL("root", "dingding1016");
 		// System.out.println(Queries.getCash(c, "fund_1", "2013-01-02"));
 
-=======
+
 		//Process testBlob = new Process();
+=======
+>>>>>>> 365c674013d1778bb92b03194e2a01d93f1dfc29
 		Connection c = Utils.connectToSQL("root", "toor");
-		System.out.println(Utils.individualValueInFunds(c, "ind_3", "2013-12-31"));
->>>>>>> 03a3d0a7b097639278328b65328f7d622881d37d
+		System.out.println(Utils.individualValueInFunds(c, "ind_2", "2013-12-29"));
 	}
 
 }

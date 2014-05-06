@@ -9,6 +9,8 @@ CREATE TABLE quotes(
     PRIMARY KEY (ticker, time)
 );
 
+CREATE INDEX quotes_index on quotes(ticker, time);
+
 CREATE TABLE fund(
     name VARCHAR(50), 
     isIndividual BOOL NOT NULL,
@@ -66,5 +68,12 @@ CREATE TABLE value(
     PRIMARY KEY(fund, time)
 );
 
-LOAD DATA INFILE "/home/xwang125/Class/cmsc424/project/424finance/quotes.csv" INTO TABLE quotes COLUMNS TERMINATED BY ',' escaped by '"' lines terminated by '\n' ignore 1 lines;
+CREATE TABLE mystery(
+    individual VARCHAR(50),
+    value DEC(50,2),
+    
+    PRIMARY KEY(individual, value)
+);
+
+LOAD DATA INFILE "/home/jeff/424/424finance/quotes.csv" INTO TABLE quotes COLUMNS TERMINATED BY ',' escaped by '"' lines terminated by '\n' ignore 1 lines;
 
