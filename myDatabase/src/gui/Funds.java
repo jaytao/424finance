@@ -30,7 +30,7 @@ import db.Process;
 import db.Utils;
 
 public class Funds extends JPanel{
-	private JTextField textField;
+	private JTextField textField, port, startDate, endDate;
 	private JTextArea textArea;
 	private Connection connection;
 //	Company portfolio;
@@ -48,9 +48,9 @@ public class Funds extends JPanel{
 
 		//second panel
 		JPanel fund = new JPanel();
-		JTextField port = new JTextField(7);
-		JTextField startDate = new JTextField(7);
-		JTextField endDate = new JTextField(7);
+		port = new JTextField(7);
+		startDate = new JTextField(7);
+		endDate = new JTextField(7);
 
 		fund.add(new JLabel("portofolio:"));
 		fund.add(port);
@@ -67,7 +67,7 @@ public class Funds extends JPanel{
 		worthB.setSize(10, 10);
 		p2.add(retB);
 		p2.add(worthB);
-		JButton b1 = new JButton("total return");
+		JButton b1 = new JButton("total rate of return");
 		JButton b2= new JButton("fianl net worth");
 		p2.add(b1);
 		p2.add(b2);
@@ -76,15 +76,38 @@ public class Funds extends JPanel{
 		out.add(p1);
 		out.add(fund);
 		out.add(p2);
-
-
-		b2.addActionListener(new ActionListener() {
-
+		add(out);
+		
+		retB.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent arg0) {
+				
+				Sql sql = new Sql();
+				String portName = port.getText();
+				String startD = startDate.getText();
+				String endD = endDate.getText();
+				Double rt = sql.portfolioRateOfReturn(connection, portName, startD, endD);
+				if(rt < -99) {
+					popError();
+				}
+				else {
+					JFrame f = showNewFrame("rate of return");
+					JPanel p = new JPanel();
+					JTextArea area = new JTextArea();
+					area.setText(rt.toString());
+					p.add(area);
+					f.add(p);
+				}
+			}
+			
+		});
+		 
+		
+		b1.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				JFrame f = showNewFrame("total net worth");
+				JFrame f = showNewFrame("rate of return");
 				Sql sql = new Sql();
-				ResultSet set = sql.portofolioTotalNetWorth(connection, "2005-01-04", "2013-12-31");
+				ResultSet set = sql.rankPortROR(connection);
 				JTable t = createTable(set, 2);
 				JScrollPane scrollPane = new JScrollPane(t);
 				JPanel p = new JPanel();
@@ -93,8 +116,23 @@ public class Funds extends JPanel{
 			}
 			
 		});
-		//	b2.addActionListener(new Fnw());
-		add(out);
+		
+		b2.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				JFrame f = showNewFrame("total net worth");
+				Sql sql = new Sql();
+				ResultSet set = sql.portofolioTotalNetWorth(connection, 0,"2005-01-04", "2013-12-31");
+				JTable t = createTable(set, 2);
+				JScrollPane scrollPane = new JScrollPane(t);
+				JPanel p = new JPanel();
+				p.add(scrollPane);
+				f.add(p);
+			}
+			
+		});
+				
 	}
 
 
@@ -152,11 +190,19 @@ public class Funds extends JPanel{
 		return f;
 	}
 
-	public class TotalReturn implements ActionListener{
-		public void actionPerformed(ActionEvent arg0) {
-
-		}
+	private JFrame popError() {
+		JFrame f = new JFrame();
+		f.setTitle("Error!");
+		f.setSize(200, 200);
+		f.setLocationRelativeTo(null);
+		JPanel showResult = new JPanel();
+		JTextArea area = new JTextArea("No such Record!");
+		showResult.add(area);
+		f.add(showResult);
+		f.setVisible(true);
+		return f;
 	}
+
 
 
 }

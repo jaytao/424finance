@@ -1,27 +1,38 @@
 package gui;
 
-import gui.Funds.TotalReturn;
 
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableModel;
+import java.sql.Connection;
+
+
+import db.Utils;
 
 public class Individual extends JPanel{
 
+	private Connection connection;
 	public Individual() {
-
+		connection = Utils.connectToSQL("root", "dingding1016"); 
 		JPanel out1 = new JPanel(new GridLayout(0,1));
 
 		JPanel p1 = new JPanel();
@@ -61,17 +72,73 @@ public class Individual extends JPanel{
 		JPanel outfin = new JPanel(new GridLayout(0,1));
 		outfin.add(out);
 		add(outfin);
+
+		b2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				JFrame f = showNewFrame("total net worth");
+				Sql sql = new Sql();
+				ResultSet set = sql.portofolioTotalNetWorth(connection, 1,"2005-01-04", "2013-12-31");
+				JTable t = createTable(set, 2);
+				JScrollPane scrollPane = new JScrollPane(t);
+				JPanel p = new JPanel();
+				p.add(scrollPane);
+				f.add(p);
+			}
+		});
 	}
-
-	public class ITotalReturn implements ActionListener{
-		public void actionPerformed(ActionEvent arg0) {
-
+	private JTable createTable(ResultSet rs, int numberOfColumns) {
+		if(rs == null) {
+			return null;
 		}
-	}
 
-	public class IFnw implements ActionListener{
-		public void actionPerformed(ActionEvent arg0) {
+		JPanel porto = new JPanel();
+		setLayout(new FlowLayout());
+		porto.add(new JLabel("Information of stock"));
+		String[] columnNames = {"individual", "value"};
+		DefaultTableModel model = null;
+		JTable table = null;
+		int rowcount = 0;
+		
+		try {
+			if (rs.last()) {
+				rowcount = rs.getRow();
+				rs.beforeFirst(); // not rs.first() because the rs.next() below will move on, missing the first element
+			}
+		//	model = new DefaultTableModel(columnNames, rowcount); 
+			
 
+			JScrollPane scrollPane = new JScrollPane(table);
+			porto.add(scrollPane);
+			Object[][] data = new Object[rowcount][numberOfColumns];
+			int j = 0;
+			while (rs.next()) {
+				Object[] rowData = new Object[numberOfColumns];
+				System.out.println(rowData.length);
+				for(int i  = 0; i < rowData.length; i++) {
+					rowData[i] = rs.getObject(i+1);
+				}
+				data[j] = rowData;
+				j++;
+			}
+			table = new JTable(data, columnNames);
+			table.setFillsViewportHeight(true);
+			return table;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		
+		return table;
 	}
+
+	private JFrame showNewFrame(String title) {
+		JFrame f = new JFrame();
+		f.setTitle(title);
+		f.setSize(400, 500);
+		f.setLocationRelativeTo(null);
+		f.setVisible(true);
+		return f;
+	}
+
+
 }
