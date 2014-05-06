@@ -20,7 +20,7 @@ public class Queries {
 
 
 	public static final String ACTIVITY_GET = "select * from activity order by time asc;";
-
+	
 	public static void insertCash(Connection connection, String name, double cash, String date) {
 		PreparedStatement st;
 		try {
@@ -30,6 +30,7 @@ public class Queries {
 			st.setString(3, date);
 
 			st.executeUpdate();
+			st.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -49,6 +50,7 @@ public class Queries {
 			st.setString(5, date_execute);
 
 			st.executeUpdate();
+			st.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			System.out.println(percent);
@@ -65,6 +67,7 @@ public class Queries {
 			st.setString(3, date);
 
 			st.executeUpdate();
+			st.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -81,6 +84,7 @@ public class Queries {
 			st.setString(4, date);
 
 			st.executeUpdate();
+			st.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -97,6 +101,7 @@ public class Queries {
 			st.setString(4, s4);
 			st.setString(5, date);
 			st.executeUpdate();
+			st.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -111,6 +116,7 @@ public class Queries {
 			st.setString(1, name);
 			st.setBoolean(2, isInd);
 			st.executeUpdate();
+			st.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -136,9 +142,9 @@ public class Queries {
 			double price1 = result.getDouble(3);
 			result.next();
 			double price2 = result.getDouble(3);
-
+			st.close();
 			return price2 / price1;
-
+			
 		} catch (SQLException e) {
 			System.out.println(ticker);
 			System.out.println(date1);
@@ -150,7 +156,7 @@ public class Queries {
 		return 0;
 	}
 
-	private static final String VALUE_FUND = "select * from value where fund=? and time<=? order by time desc;";
+	private static final String VALUE_FUND = "select * from value where fund=? and time<=? order by time desc limit 1;";
 	
 	public static double getFundTotalValue(Connection connection, String fund, String date){
 		PreparedStatement st;
@@ -164,7 +170,9 @@ public class Queries {
 
 				return -1.0;
 			}
-			return result.getDouble("value");
+			double ret = result.getDouble("value");
+			st.close();
+			return ret;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -196,7 +204,7 @@ public class Queries {
 		return null;
 	}
 	
-	private static final String CASH_GET = "select * from cash where name=? and time<=? order by time desc;";
+	private static final String CASH_GET = "select * from cash where name=? and time<=? order by time desc limit 1;";
 	public static double getCash(Connection connection, String name, String date){
 		try{
 			PreparedStatement st = connection.prepareStatement(CASH_GET);
@@ -208,6 +216,7 @@ public class Queries {
 				percent = rs.getDouble(2);
 			}
 			double value = Queries.getFundTotalValue(connection, name, date);
+			st.close();
 			return percent * value;
 			
 		}catch (SQLException e) {
@@ -217,7 +226,7 @@ public class Queries {
 		return 0;
 	}
 	
-	private static final String OWNS_PERCENT = "select * from owns where fund=? and ticker=? order by date_execute desc;";
+	private static final String OWNS_PERCENT = "select * from owns where fund=? and ticker=? order by date_execute desc limit 1;";
 	public static double getStockOwnsPercent(Connection connection, String fund, String ticker){
 		try{
 			PreparedStatement st = connection.prepareStatement(OWNS_PERCENT);
@@ -225,7 +234,9 @@ public class Queries {
 			st.setString(2, ticker);
 			ResultSet rs = st.executeQuery();
 			rs.next();
-			return rs.getDouble(3);
+			double ret = rs.getDouble(3);
+			st.close();
+			return ret;
 		} catch (SQLException e){
 			e.printStackTrace();
 		}
@@ -247,7 +258,9 @@ public class Queries {
 			st.setString(2, ticker);
 			ResultSet rs = st.executeQuery();
 			rs.next();
-			return rs.getString(5);
+			String ret = rs.getString(5);
+			st.close();
+			return ret;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -263,7 +276,9 @@ public class Queries {
 			st.setString(2, fund);
 			ResultSet rs = st.executeQuery();
 			rs.next();
-			return rs.getDouble(3);
+			double ret = rs.getDouble(3);
+			st.close();
+			return ret;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -289,7 +304,9 @@ public class Queries {
 			
 			ResultSet rs = st.executeQuery();
 			rs.next();
-			return rs.getDouble(1);
+			double ret = rs.getDouble(1);
+			st.close();
+			return ret;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

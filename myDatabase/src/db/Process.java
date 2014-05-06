@@ -27,13 +27,13 @@ public class Process {
 	PreparedStatement statement = null;
 
 	// String csvFile = "/home/xwang125/Class/cmsc424/project/script1.csv";
-	String csvFile = "/home/jeff/424/424finance/script1.csv";
+	String csvFile = "/home/jeff/424/424finance/script4.csv";
 
 	public Process() throws IOException {
 
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			connection = DriverManager.getConnection("jdbc:mysql://Localhost/stocks", "root", "dingding1016");
+			connection = DriverManager.getConnection("jdbc:mysql://Localhost/stocks", "root", "toor");
 		} catch (Exception e) {
 			System.out.println("Error Occured While connecting " + e);
 		}
@@ -47,7 +47,6 @@ public class Process {
 	// the transactions
 	public void executeActions() {
 		ResultSet result = Queries.getActivity(connection);
-		DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 		
 		try {
 			int i = 0;
@@ -214,7 +213,6 @@ public class Process {
 
 		String exeDate = Utils.findExecuteDate(connection, obj, date);
 
-		
 		// stock being bought
 		if (Constants.COMPANIES.contains(obj)) {
 			double fundValue = Queries.getFundTotalValue(connection, fund, date);
@@ -277,8 +275,8 @@ public class Process {
 
 		Process testBlob = new Process();
 
-		Connection c = Utils.connectToSQL("root", "toor");
-		System.out.println(Utils.individualValueInFunds(c, "ind_2", "2013-12-29"));
+//		Connection c = Utils.connectToSQL("root", "toor");
+//		System.out.println(Utils.individualValueInFunds(c, "ind_2", "2013-12-29"));
 	}
 
 }

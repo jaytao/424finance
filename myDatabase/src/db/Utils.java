@@ -75,13 +75,12 @@ public class Utils {
 			}
 			
 			newFundValue += Queries.getCash(connection, fund, date);
-<<<<<<< HEAD
 			newFundValue += individualValueInFunds(connection, fund, date);
-=======
->>>>>>> f594353d083e38a808573f6619ead85ee46f0064
+
 			if (newFundValue == 0) {
 				return -1;
 			}
+			rs.close();
 			return newFundValue;
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -116,6 +115,7 @@ public class Utils {
 				}
 				finished.add(portfolio);
 			}
+			rs.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
