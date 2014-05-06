@@ -73,6 +73,21 @@ public class Individual extends JPanel{
 		outfin.add(out);
 		add(outfin);
 
+		b1.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				JFrame f = showNewFrame("rate of return");
+				Sql sql = new Sql();
+				ResultSet set = sql.rankPortROR(connection, 1);
+				JTable t = createTable(set, 2);
+				JScrollPane scrollPane = new JScrollPane(t);
+				JPanel p = new JPanel();
+				p.add(scrollPane);
+				f.add(p);
+			}
+
+		});
+		
 		b2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				JFrame f = showNewFrame("total net worth");
@@ -104,9 +119,6 @@ public class Individual extends JPanel{
 				rowcount = rs.getRow();
 				rs.beforeFirst(); // not rs.first() because the rs.next() below will move on, missing the first element
 			}
-		//	model = new DefaultTableModel(columnNames, rowcount); 
-			
-
 			JScrollPane scrollPane = new JScrollPane(table);
 			porto.add(scrollPane);
 			Object[][] data = new Object[rowcount][numberOfColumns];

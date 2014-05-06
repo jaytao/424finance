@@ -138,6 +138,25 @@ public class Sql {
 		return null;
 	}
 
+	public double portfolioWorth(Connection connection, String fund, String date) {
+		String input = "select t.value from" + 
+				"(select fund, value, max(time) from value where time <? and fund =? group by fund) as t";
+		PreparedStatement st;
+		try {
+
+			st = connection.prepareStatement(input);
+			st.setString(1, date);
+			st.setString(2, fund);
+			ResultSet rs = st.executeQuery();
+			if(rs.next()) {
+				return rs.getDouble("value");
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return -1;
+	}
 	public double portfolioWorthEnd(Connection connection, String fund){
 		String query = "select a.ticker, a.d, c.percent, b.value, c.percent * b.value from " +
 				"(select fund, ticker, max(date_execute) d from owns where fund=? group by ticker) a, " +
@@ -189,21 +208,16 @@ public class Sql {
 	//gets the portofolio total rate of return
 	public double portfolioRateOfReturn(Connection connection, String fund, String begin, String end){
 		double start = Queries.getFundTotalValue(connection, fund, begin);
-		if(start == -1.0) {
-			return -100.0;
-		}
+//		if(start == -1.0) {
+//			return -100.0;
+//		}
 		double total = portfolioWorthEnd(connection, fund);
-			if(total == 0.0) {
-				return -100.0;
-			}
-		if(Queries.getCash(connection,fund, end) == 0.0) {
-			return -100.0;
-		}	
+//		if(total == 0.0) {
+//			return -100.0;
+//		}
+		Queries.getCash(connection,fund, end);
 		total += Queries.getCash(connection, fund, end);
 		double contains = portfolioContainsPercent(connection, fund, end);
-		if(contains == -1.0) {
-			return -100.0;
-		}
 		System.out.println(fund);
 		System.out.println(start);
 		System.out.println(total);
@@ -211,12 +225,14 @@ public class Sql {
 		return (total*(1-contains))/start;
 	}
 
-	public ResultSet rankPortROR(Connection connection) {
-		String s1 = "select name from fund where isindividual = '0'";
+	public ResultSet rankPortROR(Connection connection, int i) {
+		
+		String s1 = "select name from fund where isindividual = ? ";
 		String s11 = "drop table rankPortROR";
-		String s2 = "create table rankPortROR(fund varchar(10), rateOfReturn dec(15, 12));";
+		String s2 = "create table rankPortROR(fund varchar(10), rateOfReturn dec(50, 25));";
 		try {
 			PreparedStatement statement1 = connection.prepareStatement(s1);
+			statement1.setInt(1, i);
 			PreparedStatement statement11 = connection.prepareStatement(s11);
 			PreparedStatement statement2 = connection.prepareStatement(s2);
 			ResultSet result1 = statement1.executeQuery();
@@ -243,6 +259,24 @@ public class Sql {
 		return null;
 	}
 
+//	public ResultSet rankIndivROR(Connection connection) {
+//		String s1 = "select action, col_1, col_2 from activity where action = 'individual';";
+//		PreparedStatement statement1;
+//		try {
+//			statement1 = connection.prepareStatement(s1);
+//			ResultSet rs1 = statement1.executeQuery();
+//			while(rs1.next()) {
+//				String indiv = rs1.getString("col_1");
+//				double cash = rs1.getDouble("col_2");
+//				double worthEnd = portfolioWorthEnd(connection, indiv);
+//				double indivROR = worthEnd/cash;
+//			}
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		
+//	}
 
 	public static void main(String args[]){
 		Sql s = new Sql();

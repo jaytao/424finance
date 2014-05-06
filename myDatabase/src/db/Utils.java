@@ -75,10 +75,9 @@ public class Utils {
 			}
 			
 			newFundValue += Queries.getCash(connection, fund, date);
-<<<<<<< HEAD
+//<<<<<<< HEAD
 			newFundValue += individualValueInFunds(connection, fund, date);
-=======
->>>>>>> f594353d083e38a808573f6619ead85ee46f0064
+
 			if (newFundValue == 0) {
 				return -1;
 			}
