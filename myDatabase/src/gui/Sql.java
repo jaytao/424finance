@@ -239,6 +239,11 @@ public class Sql {
 			
 			ResultSet rsMystery = stMystery.executeQuery();
 			return rsMystery;
+		} catch (SQLException e){
+			e.printStackTrace();
+		}
+		return null;
+	}
 			
 	public ResultSet rankPortROR(Connection connection) {
 		String s1 = "select name from fund where isindividual = '0'";
