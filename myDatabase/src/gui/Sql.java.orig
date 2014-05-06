@@ -125,6 +125,18 @@ public class Sql {
 		}
 		return null;
 	}
+	public ResultSet stockTop25Safe(Connection connection){
+		String query = "select ticker, std(adjclose) std from quotes group by ticker order by std asc";
+		try {
+			ResultSet rs;
+			rs = connection.prepareStatement(query).executeQuery();
+			return rs;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
 
 	public double portfolioWorthEnd(Connection connection, String fund){
 		String query = "select a.ticker, a.d, c.percent, b.value, c.percent * b.value from " +
@@ -192,8 +204,13 @@ public class Sql {
 		if(contains == -1.0) {
 			return -100.0;
 		}
+		System.out.println(fund);
+		System.out.println(start);
+		System.out.println(total);
+		System.out.println(contains);
 		return (total*(1-contains))/start;
 	}
+<<<<<<< HEAD
 	
 	public ResultSet mysteryQuery(Connection connection){
 		String query = "select c.individual, c.portfolio, c.date_order, c.percent from " +
@@ -240,6 +257,8 @@ public class Sql {
 			ResultSet rsMystery = stMystery.executeQuery();
 			return rsMystery;
 			
+=======
+
 	public ResultSet rankPortROR(Connection connection) {
 		String s1 = "select name from fund where isindividual = '0'";
 		String s11 = "drop table rankPortROR";
@@ -265,12 +284,19 @@ public class Sql {
 			PreparedStatement statement4 = connection.prepareStatement(s4);
 			ResultSet result4 = statement4.executeQuery();
 			return result4;
+>>>>>>> 34fdef7c08dc785adf3a03e5a6f91bcdd586c43e
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
 	}
+<<<<<<< HEAD
+	
+=======
+
+
+>>>>>>> 34fdef7c08dc785adf3a03e5a6f91bcdd586c43e
 	public static void main(String args[]){
 		Sql s = new Sql();
 		double a = s.portfolioWorthEnd(Utils.connectToSQL("root", "toor"), "fund_10");

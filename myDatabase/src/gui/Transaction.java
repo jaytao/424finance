@@ -2,6 +2,8 @@ package gui;
 
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -11,6 +13,7 @@ import javax.swing.JTextField;
 
 public class Transaction extends JPanel{
 	//for transcaion:
+	JTextField path;
 	public Transaction() {
 		JPanel p1 = new JPanel();
 		JLabel l1= new JLabel("transaction");
@@ -19,10 +22,14 @@ public class Transaction extends JPanel{
 		JButton output = new JButton("output file");
 		p1.add(output);
 	
+		JPanel file = new JPanel();
+		JButton uploadFile = new JButton("uploadFile");
+		file.add(uploadFile);
+		path = new JTextField(25);
+		file.add(path);
+		
 		
 		JPanel out1 = new JPanel();
-		JButton uploadFile = new JButton("uploadFile");
-		out1.add(uploadFile);
 		out1.add(new JLabel("or"));
 		JButton trans = new JButton("input");
 		out1.add(trans);
@@ -30,7 +37,11 @@ public class Transaction extends JPanel{
 		JTextField indiv = new JTextField(8);
 		out1.add(indiv);
 		
-		
+		uploadFile.addActionListener(new ActionListener() { 
+			public void actionPerformed(ActionEvent arg0) {
+				
+			}
+		});
 		
 		
 		
@@ -61,6 +72,7 @@ public class Transaction extends JPanel{
 
 		JPanel out = new JPanel(new GridLayout(0, 1));
 		out.add(p1);
+		out.add(file);
 		out.add(out1);
 		out.add(out2);
 		out.add(out3);

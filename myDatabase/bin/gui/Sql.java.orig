@@ -18,15 +18,15 @@ public class Sql {
 
 	}
 
-	//	public static void main(String[] args) {
-	//		connection = Utils.connectToSQL("root", "dingding1016"); 
-	//		Sql sql = new Sql();
-	//		sql.rankPortROR(connection);
-	//	}
+//	public static void main(String[] args) {
+//		connection = Utils.connectToSQL("root", "dingding1016"); 
+//		Sql sql = new Sql();
+//		sql.rankPortROR(connection);
+//	}
 	public double stockQuote(Connection connection, String stock, String date) {
 		String input = "select adjclose from quotes where ticker = ? and time = ?";
 		try {
-			double rs = -1;
+			double rs = 0.0;
 			statement = connection.prepareStatement(input);
 			statement.setString(1, stock);
 			statement.setString(2, date);
@@ -43,37 +43,32 @@ public class Sql {
 
 	}
 
-	public ResultSet portofolioTotalNetWorth(Connection connection, int i, String startdate, String endDate) {
-		String drop = "drop table temp";
-		String s1 = "select name from fund where isindividual = ?";
-		String s2 = "create table temp(fund varchar(10), value dec(50, 20))";
+	public ResultSet portofolioTotalNetWorth(Connection connection, String startdate, String endDate) {
 
-
+		String s1 = "select name from fund where isindividual = 0";
+		String s2 = "create table temp(fund varchar(10), value dec(15, 12))";
+		//	String drop = "drop view temp";
+		String input = "create view temp as (select fund,  max(time) as mt from value group by fund order by value);";
 		try {
-			PreparedStatement statement = connection.prepareStatement(drop);
-			statement.executeUpdate();
 			PreparedStatement statement1 = connection.prepareStatement(s1);
-			statement1.setInt(1, i);
 			PreparedStatement statement2 = connection.prepareStatement(s2);
 			statement2.executeUpdate();
 			ResultSet rt = statement1.executeQuery();
 			while(rt.next()) {
 				String fundName = rt.getString("name");
-				double values = Utils.fundCurrentValue(connection, fundName, "2013-12-31");
+				double values = Utils.fundCurrentValue(connection, fundName, "2014-01-01");
 				String s3 = "insert into temp values(?,?)";
 				PreparedStatement statement3 = connection.prepareStatement(s3);
-				System.out.println(fundName);
-				System.out.println(values);
 				statement3.setString(1, fundName);
 				statement3.setDouble(2, values);
 				statement3.executeUpdate();
-
+				
 			}
 			String s4 = "select * from temp order by value";
 			PreparedStatement statement4 = connection.prepareStatement(s4);
 			ResultSet rt2 = statement4.executeQuery();
 			return rt2;
-
+			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -111,8 +106,7 @@ public class Sql {
 				"pow(q2.adjclose/q1.adjclose,1/9)-1 AnnualRoR from quotes q1, quotes q2, " +
 				"(select distinct ticker t from quotes) a where q1.ticker = q2.ticker " +
 				"and q1.ticker=t and q1.time=? and q2.time=? " +
-				"order by AnnualRoR desc limit 25;";
-		System.out.println(query);
+				"order by ror desc limit 25;";
 		try {
 			PreparedStatement st = connection.prepareStatement(query);
 			st.setString(1, firstDate);
@@ -125,7 +119,24 @@ public class Sql {
 		}
 		return null;
 	}
+<<<<<<< HEAD
 
+	public ResultSet stockTop25Safe(Connection connection){
+		String query = "select ticker, std(adjclose) std from quotes group by ticker order by std asc";
+		try {
+			ResultSet rs;
+			rs = connection.prepareStatement(query).executeQuery();
+			return rs;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+=======
+	
+>>>>>>> 03a3d0a7b097639278328b65328f7d622881d37d
 	public double portfolioWorthEnd(Connection connection, String fund){
 		String query = "select a.ticker, a.d, c.percent, b.value, c.percent * b.value from " +
 				"(select fund, ticker, max(date_execute) d from owns where fund=? group by ticker) a, " +
@@ -137,7 +148,7 @@ public class Sql {
 			st.setString(1, fund);
 			ResultSet rs = st.executeQuery();
 
-			double totalWorth = 0.0;
+			double totalWorth = 0;
 			while (rs.next()){
 				String ticker = rs.getString(1);
 				String date = rs.getString(2);
@@ -171,85 +182,31 @@ public class Sql {
 		} catch (SQLException e){
 			e.printStackTrace();
 		}
-		return -1.0;
+		return -1;
 	}
 
 	//gets the portofolio total rate of return
 	public double portfolioRateOfReturn(Connection connection, String fund, String begin, String end){
 		double start = Queries.getFundTotalValue(connection, fund, begin);
-		if(start == -1.0) {
-			return -100.0;
-		}
 		double total = portfolioWorthEnd(connection, fund);
-			if(total == 0.0) {
-				return -100.0;
-			}
-		if(Queries.getCash(connection,fund, end) == 0.0) {
-			return -100.0;
-		}	
 		total += Queries.getCash(connection, fund, end);
 		double contains = portfolioContainsPercent(connection, fund, end);
-		if(contains == -1.0) {
-			return -100.0;
-		}
+		System.out.println(fund);
+		System.out.println(start);
+		System.out.println(total);
+		System.out.println(contains);
 		return (total*(1-contains))/start;
 	}
-	
-	public ResultSet mysteryQuery(Connection connection){
-		String query = "select c.individual, c.portfolio, c.date_order, c.percent from " +
-				"(select individual, portfolio, max(date_order) latest_d from contains where portfolio=? group by individual) a, " +
-				"contains c where c.individual=a.individual and c.portfolio=a.portfolio and " +
-				"c.date_order=a.latest_d order by c.percent limit 1;";
-		
-		String insert = "insert into mystery values (?,?) on duplicate key update";
-		
-		String mystery = "select * from mystery order by value desc;";
-		
-		String remove = "delete from mystery";
-		
-		ResultSet rsFunds = Queries.getFund(connection);
-		try {
-			PreparedStatement stQuery = connection.prepareStatement(query);
-			PreparedStatement stRemove = connection.prepareStatement(remove);
-			PreparedStatement stInsert = connection.prepareStatement(insert);
-			PreparedStatement stMystery = connection.prepareStatement(mystery);
-			
-			stRemove.executeUpdate();
-			
-			//go through all funds and run query
-			while(rsFunds.next()){
-				stQuery.setString(1, rsFunds.getString(1));
-				ResultSet rsQuery = stQuery.executeQuery();
-				
-				//if returned a majority individual
-				if(rsQuery.next()){
-					
-					//make sure its not 0
-					if (rsQuery.getDouble(4) > 0.0){
-						String ind = rsQuery.getString(1);
-						double amount = Utils.fundCurrentValue(connection, ind, rsQuery.getString(3));
-						
-						stInsert.setString(1, ind);
-						stInsert.setDouble(2, amount);
-						
-						stInsert.executeUpdate();
-					}
-				}
-			}
-			
-			ResultSet rsMystery = stMystery.executeQuery();
-			return rsMystery;
-			
-	public ResultSet rankPortROR(Connection connection) {
+<<<<<<< HEAD
+
+	public void rankPortROR(Connection connection) {
 		String s1 = "select name from fund where isindividual = '0'";
-		String s11 = "drop table rankPortROR";
+		//	String s11 = "drop table rankPortROR";
 		String s2 = "create table rankPortROR(fund varchar(10), rateOfReturn dec(15, 12));";
 		try {
 			PreparedStatement statement1 = connection.prepareStatement(s1);
-			PreparedStatement statement11 = connection.prepareStatement(s11);
 			PreparedStatement statement2 = connection.prepareStatement(s2);
 			ResultSet result1 = statement1.executeQuery();
-			statement11.executeUpdate();
 			statement2.executeUpdate();
 			while(result1.next()) {
 				String fundName = result1.getString("name");
@@ -261,19 +218,22 @@ public class Sql {
 				statement3.executeUpdate();
 			}
 
-			String s4 = "select * from rankPortROR order by rateOfReturn";
-			PreparedStatement statement4 = connection.prepareStatement(s4);
-			ResultSet result4 = statement4.executeQuery();
-			return result4;
+			//			String s4 = "select * from rankPortROR order by rateOfReturn";
+			//			PreparedStatement statement4 = connection.prepareStatement(s4);
+			//			statement4.
+
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return null;
-	}
+
+=======
+	
+	
 	public static void main(String args[]){
 		Sql s = new Sql();
 		double a = s.portfolioWorthEnd(Utils.connectToSQL("root", "toor"), "fund_10");
 		System.out.println(a);
+>>>>>>> 03a3d0a7b097639278328b65328f7d622881d37d
 	}
 }

@@ -51,6 +51,7 @@ public class Utils {
 		try {
 			HashMap<String, Double> stockAmount = new HashMap<String, Double>();
 			double fundValue = Queries.getFundTotalValue(connection, fund, date);
+			System.out.println("fund:" + fundValue);
 			double newFundValue = 0;
 
 			ResultSet rs = Queries.getFundOwnsStock(connection, fund);
@@ -74,6 +75,10 @@ public class Utils {
 			}
 			
 			newFundValue += Queries.getCash(connection, fund, date);
+<<<<<<< HEAD
+			newFundValue += individualValueInFunds(connection, fund, date);
+=======
+>>>>>>> f594353d083e38a808573f6619ead85ee46f0064
 			if (newFundValue == 0) {
 				return -1;
 			}

@@ -29,7 +29,7 @@ public class Company extends JPanel{
 
 
 	private JTable table;
-	private JTextField textField, quoteInformation;
+	private JTextField textField, quoteInformation, stockName, start, end;
 	Process command;
 	private int width, height;
 	private Utils utility = new Utils();
@@ -63,15 +63,17 @@ public class Company extends JPanel{
 		Iquote.add(date);
 		out1.add(Iquote); 
 
-		
+
 		quote.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {
 				Sql sql = new Sql();
 				String stockName = stock.getText();
 				String dateName = date.getText();
 				Double rt = sql.stockQuote(connection, stockName, dateName);
-				System.out.println(rt);
-				if(arg0.getSource() instanceof JButton) {
+				if(rt < 0) {
+					popError();
+				}
+				else {
 					showNewFrame("Quote of stock", rt.toString());
 				}
 			}
@@ -83,15 +85,35 @@ public class Company extends JPanel{
 		JButton readData = new JButton("RateOfReturn");
 		display.add(readData);
 		display.add(new JLabel("stock: "));
-		display.add(new JTextField(10));
+		stockName = new JTextField(10);
+		display.add(stockName);
 		display.add(new JLabel("Start: "));
-		display.add( new JTextField(10));
+		start = new JTextField(10);
+		display.add(start);
 
 		JPanel d1 = new JPanel();
 		d1.add(new JLabel("end: "));
-		d1.add( new JTextField(10));
+		end = new JTextField(10);
+		d1.add(end);
 		display.add(d1);
 
+		readData.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				JFrame f = showNewFrame2("rate of return");
+				Sql sql = new Sql();
+				String stock = stockName.getText();
+				String startD = start.getText();
+				String endD = end.getText();
+				Double result = sql.stockRateOfReturn(connection, stock, startD, endD);
+				JPanel showResult = new JPanel();
+				JTextArea area = new JTextArea();
+				area.setText(result.toString());
+				JScrollPane scroll = new JScrollPane(area);
+				showResult.add(scroll);
+				f.add(showResult);
+				f.setVisible(true);
+			}
+		});
 		//third panel
 		JPanel out2 = new JPanel(new GridLayout(0,1));
 		JPanel compare = new JPanel();
@@ -104,9 +126,9 @@ public class Company extends JPanel{
 
 		JPanel p3 = new JPanel();
 		JButton top25 = new JButton("top 25 stocks in Annualized ROR");
-		JButton lowest = new JButton("top five lowest-risk stocks");
+
 		p3.add(top25);
-		p3.add(lowest);
+
 		out2.add(compare);
 		out2.add(p3);
 
@@ -117,13 +139,71 @@ public class Company extends JPanel{
 		outer.add(display);
 		outer.add(out2);
 		add(outer, BorderLayout.NORTH);
-		top25.addActionListener(new Stock25Listener());
+		top25.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				Sql sql = new Sql();
+				ResultSet rt = sql.stockTop25Return(connection);
+				JTable table= createTable(rt, 6);
+				JFrame f = showNewFrame2("annualized rate of return");
+				JScrollPane scrollPane = new JScrollPane(table);
+				JPanel p = new JPanel();
+				p.add(scrollPane);
+				f.add(p);
+			}
+
+		});
 	}
+
+
+	private JTable createTable(ResultSet rs, int numberOfColumns) {
+		if(rs == null) {
+			return null;
+		}
+
+		JPanel porto = new JPanel();
+		setLayout(new FlowLayout());
+		porto.add(new JLabel("Information of stock"));
+		String[] columnNames = {"stock", "2", "3", "4", "5", "annulized total rate of return"};
+		DefaultTableModel model = null;
+		JTable table = null;
+		int rowcount = 0;
+
+		try {
+			if (rs.last()) {
+				rowcount = rs.getRow();
+				rs.beforeFirst(); // not rs.first() because the rs.next() below will move on, missing the first element
+			}
+
+
+			JScrollPane scrollPane = new JScrollPane(table);
+			porto.add(scrollPane);
+			Object[][] data = new Object[rowcount][numberOfColumns];
+			int j = 0;
+			while (rs.next()) {
+				Object[] rowData = new Object[numberOfColumns];
+				System.out.println(rowData.length);
+				for(int i  = 0; i < rowData.length; i++) {
+					rowData[i] = rs.getObject(i+1);
+				}
+				data[j] = rowData;
+				j++;
+			}
+			table = new JTable(data, columnNames);
+			table.setFillsViewportHeight(true);
+			return table;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return table;
+	}
+
 
 	private JFrame showNewFrame(String title, Object output) {
 		JFrame f = new JFrame();
 		f.setTitle(title);
-		f.setSize(400, 500);
+		f.setSize(200, 200);
 		f.setLocationRelativeTo(null);
 		JPanel showResult = new JPanel();
 		JTextArea area = new JTextArea();
@@ -135,17 +215,28 @@ public class Company extends JPanel{
 		return f;
 	}
 
-
-
-
-	private class Stock25Listener implements ActionListener{
-		@Override
-		public void actionPerformed(ActionEvent arg0) {
-
-		}
-
-
+	private JFrame showNewFrame2(String title) {
+		JFrame f = new JFrame();
+		f.setTitle(title);
+		f.setSize(700, 500);
+		f.setLocationRelativeTo(null);
+		f.setVisible(true);
+		return f;
 	}
+	
+	private JFrame popError() {
+		JFrame f = new JFrame();
+		f.setTitle("Error!");
+		f.setSize(200, 200);
+		f.setLocationRelativeTo(null);
+		JPanel showResult = new JPanel();
+		JTextArea area = new JTextArea("No such Record!");
+		showResult.add(area);
+		f.add(showResult);
+		f.setVisible(true);
+		return f;
+	}
+
 
 }
 

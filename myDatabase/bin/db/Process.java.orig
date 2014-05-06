@@ -26,8 +26,13 @@ public class Process {
 	Connection connection = null;
 	PreparedStatement statement = null;
 
+<<<<<<< HEAD
+	 String csvFile = "/home/xwang125/Class/cmsc424/project/script1.csv";
+//	String csvFile = "/home/jeff/424/424finance/script1.csv";
+=======
 	// String csvFile = "/home/xwang125/Class/cmsc424/project/script1.csv";
 	String csvFile = "/home/jeff/424/424finance/script1.csv";
+>>>>>>> 03a3d0a7b097639278328b65328f7d622881d37d
 
 	public Process() throws IOException {
 
@@ -274,11 +279,22 @@ public class Process {
 	}
 
 	public static void main(String[] args) throws SQLException, IOException, ParseException {
+<<<<<<< HEAD
 
 		Process testBlob = new Process();
 
+
+		//Process testBlob = new Process();
+		
+
+		//Connection c = Utils.connectToSQL("root", "dingding1016");
+		// System.out.println(Queries.getCash(c, "fund_1", "2013-01-02"));
+
+=======
+		//Process testBlob = new Process();
 		Connection c = Utils.connectToSQL("root", "toor");
-		System.out.println(Utils.individualValueInFunds(c, "ind_2", "2013-12-29"));
+		System.out.println(Utils.individualValueInFunds(c, "ind_3", "2013-12-31"));
+>>>>>>> 03a3d0a7b097639278328b65328f7d622881d37d
 	}
 
 }

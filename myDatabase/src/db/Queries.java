@@ -1,5 +1,6 @@
 package db;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -50,6 +51,7 @@ public class Queries {
 			st.executeUpdate();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
+			System.out.println(percent);
 			e.printStackTrace();
 		}
 	}
@@ -159,7 +161,8 @@ public class Queries {
 
 			ResultSet result = st.executeQuery();
 			if (!result.next()){
-				return -1;
+
+				return -1.0;
 			}
 			return result.getDouble("value");
 		} catch (SQLException e) {
@@ -200,10 +203,10 @@ public class Queries {
 			st.setString(1, name);
 			st.setString(2, date);
 			ResultSet rs = st.executeQuery();
-			
-			rs.next();
-			double percent = rs.getDouble(2);
-			
+			double percent = 0.0;
+			if(rs.next()) {
+				percent = rs.getDouble(2);
+			}
 			double value = Queries.getFundTotalValue(connection, name, date);
 			return percent * value;
 			
