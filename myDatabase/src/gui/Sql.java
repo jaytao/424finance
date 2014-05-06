@@ -213,7 +213,6 @@ public class Sql {
 		return (total*(1-contains))/start;
 	}
 
-
 	
 	public ResultSet mysteryQuery(Connection connection){
 		String query = "select c.individual, c.portfolio, c.date_order, c.percent from " +
