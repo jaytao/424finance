@@ -12,8 +12,8 @@ public class Queries {
 	private static final String CONTAINS_INSERT = "insert into contains values(?,?,?,?);";
 	private static final String CASH_INSERT = "replace into cash values(?,?,?);";
 	private static final String ACTIVITY_INSERT = "insert into activity values(?,?,?,?,?);";
-	private static final String FUND_INSERT = "insert into fund values(?,?)";
-
+	private static final String FUND_INSERT = "replace into fund values(?,?)";
+	
 	private static final String QUOTES_APPRECIATION = "(select * " + "from quotes where ticker=? and time >=? order "
 			+ "by time asc limit 1) union (select * from quotes where "
 			+ "ticker=? and time>=? order by time asc limit 1)";
@@ -243,7 +243,7 @@ public class Queries {
 		return 0;
 	}
 	
-	private static final String OWNS_FUND = "select * from owns where fund=? order by date_execute desc;";
+	private static final String OWNS_FUND = "select a.fund, a.ticker, b.percent from (select fund, ticker, max(date_execute) m from owns where fund=? group by ticker) a, owns b where b.fund=a.fund and b.ticker=a.ticker and b.date_execute=a.m;";
 	public static ResultSet getFundOwnsStock(Connection connection, String fund) throws SQLException{
 		PreparedStatement st = connection.prepareStatement(OWNS_FUND);
 		st.setString(1, fund);
@@ -286,7 +286,7 @@ public class Queries {
 		return 0;
 	}
 	
-	private static final String CONTAINS_FUND = "select * from contains where individual=? order by date_order desc;";
+	private static final String CONTAINS_FUND = "select a.individual, a.portfolio, b.percent from (select individual, portfolio, max(date_order) m from contains where individual=? group by portfolio) a, contains b where b.individual=a.individual and b.portfolio=a.portfolio and b.date_order=a.m;";
 	public static ResultSet getIndOwnsFund(Connection connection, String ind) throws SQLException{
 		PreparedStatement st = connection.prepareStatement(CONTAINS_FUND);
 		st.setString(1, ind);

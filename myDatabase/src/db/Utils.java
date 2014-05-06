@@ -34,8 +34,11 @@ public class Utils {
 			statement.setString(2, time);
 			ResultSet result = statement.executeQuery();
 			if (result.next()) {
-				return result.getString("time");
+				String ret = result.getString("time");
+				statement.close();
+				return ret;
 			} else {
+				statement.close();
 				return "2013-12-31";
 			}
 		} catch (SQLException e) {
@@ -51,7 +54,6 @@ public class Utils {
 		try {
 			HashMap<String, Double> stockAmount = new HashMap<String, Double>();
 			double fundValue = Queries.getFundTotalValue(connection, fund, date);
-			System.out.println("fund:" + fundValue);
 			double newFundValue = 0;
 
 			ResultSet rs = Queries.getFundOwnsStock(connection, fund);
@@ -73,7 +75,6 @@ public class Utils {
 				stockAmount.put(ticker, amount);
 				newFundValue += amount;
 			}
-			
 			newFundValue += Queries.getCash(connection, fund, date);
 			newFundValue += individualValueInFunds(connection, fund, date);
 

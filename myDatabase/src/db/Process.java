@@ -26,10 +26,8 @@ public class Process {
 	Connection connection = null;
 	PreparedStatement statement = null;
 
-	 // for input file
-	 
-	 	public Process(String csvFile ) throws IOException {
-	  	
+	// for input file
+
 	// String csvFile = "/home/xwang125/Class/cmsc424/project/script1.csv";
 	String csvFile = "/home/jeff/424/424finance/script4.csv";
 
@@ -43,44 +41,6 @@ public class Process {
 		}
 		System.out.println("Fill activity");
 		fillActivity();
-		System.out.println("Execute Action");
-		executeActions();
-	}
-
-	// reads the actions from the activity table in the database and executes
-	// the transactions
-	public void executeActions() {
-		ResultSet result = Queries.getActivity(connection);
-		
-		try {
-			int i = 0;
-			while (result.next()) {
-				String action = result.getString(1);
-				String date = result.getString(5);
-				if (action.equals("sell")) {
-					String fund = result.getString(2);
-					String ticker = result.getString(3);
-					sell(fund, ticker, date);
-					
-				} else if (action.equals("buy")) {
-					String fund = result.getString(2);
-					String bought = result.getString(3);
-					double amount = result.getDouble(4);
-					buy(fund, bought, amount, date);
-				} else if (action.equals("sellbuy")) {
-					String fund = result.getString(2);
-					String ticker1 = result.getString(3);
-					String ticker2 = result.getString(4);
-					sellbuy(fund, ticker1, ticker2, date);
-				}
-				System.out.println(i + "-" + action + ": " + (double)i/51734);
-			//	System.out.println()
-				i++;
-			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 
 	// parses csv file and puts the info into the activity table
@@ -91,29 +51,30 @@ public class Process {
 		String cvsSplitBy = ",";
 
 		try {
+			int i = 0;
 			br = new BufferedReader(new FileReader(csvFile));
 			while ((line = br.readLine()) != null) {
 				String[] found = line.split(cvsSplitBy);
+				System.out.println(i++ + ": " + found[0]);
 				if (found[0].equals("fund")) {
 					Queries.insertActivity(connection, found[0], found[1], found[2], "", found[3]);
 
-					Queries.insertCash(connection, found[1], 1.0, found[3]);
-					Queries.insertValue(connection, found[1], Double.parseDouble(found[2]), found[3]);
-					Queries.insertFund(connection, found[1], false);
+					fund(found[1], Double.parseDouble(found[2]), found[3], false);
 				}
-
 				else if (found[0].equals("individual")) {
 					Queries.insertActivity(connection, found[0], found[1], found[2], "", found[3]);
 
-					Queries.insertCash(connection, found[1], 1.0, found[3]);
-					Queries.insertValue(connection, found[1], Double.parseDouble(found[2]), found[3]);
-					Queries.insertFund(connection, found[1], true);
+					fund(found[1], Double.parseDouble(found[2]), found[3], true);
 				}
 
 				else if (found[0].equals("sell")) {
 					Queries.insertActivity(connection, found[0], found[1], found[2], "", found[3]);
-				} else {
+					sell(found[1], found[2], found[3]);
+				} else if (found[0].equals("buy")) {
 					Queries.insertActivity(connection, found[0], found[1], found[2], found[3], found[4]);
+					buy(found[1], found[2], Double.parseDouble(found[3]),found[4]);
+				} else if (found[0].equals("sellbuy")) {
+					sellbuy(found[1], found[2], found[3], found[4]);
 				}
 			}
 			br.close();
@@ -121,6 +82,17 @@ public class Process {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+	}
+
+	private void fund(String name, double amount, String date, boolean isInd) {
+		double fundValue = Utils.fundCurrentValue(connection, name, date);
+		if (fundValue <= 0) {
+			Queries.insertCash(connection, name, 1.0, date);
+			Queries.insertValue(connection, name, amount, date);
+			Queries.insertFund(connection, name, isInd);
+		} else {
+			Queries.insertValue(connection, name, fundValue + amount, date);
 		}
 	}
 
@@ -156,12 +128,12 @@ public class Process {
 					stockAmount.put(ticker, amount);
 					newFundValue += amount;
 				}
-
+				rs.close();
 				// calculate new ratios and insert back into owns
 				double cash = Queries.getCash(connection, fund, date);
 				newFundValue += cash;
 				Iterator<String> iter = stockAmount.keySet().iterator();
-
+				
 				while (iter.hasNext()) {
 					String ticker = iter.next();
 					double amount = stockAmount.get(ticker);
@@ -182,7 +154,7 @@ public class Process {
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
+			} 
 		}
 
 		// if ind selling fund
@@ -221,7 +193,7 @@ public class Process {
 		// stock being bought
 		if (Constants.COMPANIES.contains(obj)) {
 			double fundValue = Queries.getFundTotalValue(connection, fund, date);
-			if (fundValue < 0){
+			if (fundValue < 0) {
 				System.out.println("Fund value" + fundValue);
 			}
 			double percent = amount / fundValue;
@@ -278,10 +250,8 @@ public class Process {
 
 	public static void main(String[] args) throws SQLException, IOException, ParseException {
 
-
-
-		//Process testBlob = new Process();
-		//Connection c = Utils.connectToSQL("root", "toor");
+		Process testBlob = new Process();
+		// Connection c = Utils.connectToSQL("root", "toor");
 	}
 
 }

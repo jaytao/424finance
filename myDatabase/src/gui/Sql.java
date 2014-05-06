@@ -213,14 +213,7 @@ public class Sql {
 		return (total*(1-contains))/start;
 	}
 
-	public ResultSet rankPortROR(Connection connection, int i) {
-		
-		String s1 = "select name from fund where isindividual = ? ";
-		if(contains == -1.0) {
-			return -100.0;
-		}
-		return (total*(1-contains))/start;
-	}
+	
 	
 	public ResultSet mysteryQuery(Connection connection){
 		String query = "select c.individual, c.portfolio, c.date_order, c.percent from " +
