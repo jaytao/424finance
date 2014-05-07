@@ -60,12 +60,17 @@ public class Individual extends JPanel{
 		JButton retB = new JButton("returnValue");
 		JButton worthB = new JButton("worth");
 		worthB.setSize(10, 10);
-		p2.add(retB);
-		p2.add(worthB);
+		
 		JButton b1 = new JButton("total return");
 		JButton b2= new JButton("fianl net worth");
 		p2.add(b1);
 		p2.add(b2);
+		p2.add(retB);
+		p2.add(worthB);
+		JButton totalreturno = new JButton("totalreturn output");
+		JButton networtho = new JButton("networth output");
+		p2.add(totalreturno);
+		p2.add(networtho);
 		JPanel out = new JPanel(new GridLayout(0,1));
 		out.add(p1);
 		out.add(fund);
@@ -128,11 +133,21 @@ public class Individual extends JPanel{
 
 		});
 		
+		totalreturno.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				Sql sql = new Sql();
+				ResultSet set = sql.rankPortROR(connection, true);
+					Output.getCsvFile("/home/xwang125/Desktop/totalReturnOutputIndi.csv", set);
+				}
+			});
+		
+		
 		b2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				JFrame f = showNewFrame("total net worth");
 				Sql sql = new Sql();
-				ResultSet set = sql.portofolioTotalNetWorth(connection, 1,"2005-01-04", "2013-12-31");
+				ResultSet set = sql.portofolioTotalNetWorth(connection, 1, "2005-01-04", "2013-12-31");
 				JTable t = createTable(set, 2);
 				JScrollPane scrollPane = new JScrollPane(t);
 				JPanel p = new JPanel();
@@ -140,6 +155,16 @@ public class Individual extends JPanel{
 				f.add(p);
 			}
 		});
+		
+		networtho.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				Sql sql = new Sql();
+				ResultSet set = sql.portofolioTotalNetWorth(connection, 1, "2005-01-04", "2013-12-31");
+					Output.getCsvFile("/home/xwang125/Desktop/networthreturn.csv", set);
+				}
+			});
+
 	}
 	private JTable createTable(ResultSet rs, int numberOfColumns) {
 		if(rs == null) {

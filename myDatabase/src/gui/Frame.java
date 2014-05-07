@@ -16,7 +16,7 @@ import db.Utils;
 
 public class Frame {
 	private static void createFrame() throws IOException {
-		Connection con = Utils.connectToSQL("root", "toor");
+		Connection con = Utils.connectToSQL("root", "dingding1016");
 		JFrame.setDefaultLookAndFeelDecorated(true);
 		JFrame frame = new JFrame("Stock");
 		int width = 1080, height = 800;

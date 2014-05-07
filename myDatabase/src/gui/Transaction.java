@@ -89,8 +89,9 @@ public class Transaction extends JPanel{
 	//	out3.add(sell);
 
 		JButton partici = new JButton("majority participants");
-		
+		JButton particioutput = new JButton("majority participants output");
 		out3.add(partici);
+		out3.add(particioutput);
 		
 
 		JPanel out = new JPanel(new GridLayout(0, 1));
@@ -110,6 +111,14 @@ public class Transaction extends JPanel{
 				JPanel p = new JPanel();
 				p.add(t);
 				f.add(p);
+			}
+		});
+		
+		particioutput.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				Sql sql = new Sql();
+				ResultSet rt = sql.mysteryQuery(connection);
+				Output.getCsvFile("/home/xwang125/Desktop/majorityoutput.csv", rt);
 			}
 		});
 	}

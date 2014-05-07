@@ -66,12 +66,21 @@ public class Funds extends JPanel{
 		JButton retB = new JButton("returnValue");
 		JButton worthB = new JButton("worth");
 		worthB.setSize(10, 10);
-		p2.add(retB);
-		p2.add(worthB);
+		
 		JButton b1 = new JButton("total rate of return");
 		JButton b2= new JButton("fianl net worth");
 		p2.add(b1);
 		p2.add(b2);
+		p2.add(retB);
+		p2.add(worthB);
+		JButton reto = new JButton("returnValue output");
+		JButton wortho = new JButton("worth output");
+		JButton totalreturno = new JButton("totalreturn output");
+		JButton networtho = new JButton("networth output");
+	//	p2.add(reto);
+	//	p2.add(wortho);
+		p2.add(totalreturno);
+		p2.add(networtho);
 
 		JPanel out = new JPanel(new GridLayout(0,1));
 		out.add(p1);
@@ -101,7 +110,8 @@ public class Funds extends JPanel{
 			}
 
 		});
-
+		
+		
 
 		worthB.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {
@@ -118,6 +128,8 @@ public class Funds extends JPanel{
 				f.add(p);
 			}
 		});
+		
+	
 
 		b1.addActionListener(new ActionListener() {
 			@Override
@@ -133,6 +145,18 @@ public class Funds extends JPanel{
 			}
 
 		});
+		
+		totalreturno.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				Sql sql = new Sql();
+				ResultSet set = sql.rankPortROR(connection, false);
+					Output.getCsvFile("/home/xwang125/Desktop/totalReturnOutput.csv", set);
+				}
+			});
+		
+		
+		
 
 		b2.addActionListener(new ActionListener() {
 
@@ -149,6 +173,15 @@ public class Funds extends JPanel{
 			}
 
 		});
+		
+		networtho.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				Sql sql = new Sql();
+				ResultSet set = sql.portofolioTotalNetWorth(connection, 0,"2005-01-04", "2013-12-31");
+					Output.getCsvFile("/home/xwang125/Desktop/networthreturn.csv", set);
+				}
+			});
 
 	}
 

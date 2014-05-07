@@ -129,7 +129,7 @@ public class Company extends JPanel{
 		//third panel
 		JPanel out2 = new JPanel(new GridLayout(0,1));
 		JPanel compare = new JPanel();
-		JButton compareB = new JButton("compare");
+		JLabel compareB = new JLabel("compare:");
 		compare.add(compareB);		
 		compare.add(new JLabel("stock1"));
 		stock1 = new JTextField(10);
@@ -141,9 +141,9 @@ public class Company extends JPanel{
 		compare.add(output);
 		JPanel p3 = new JPanel();
 		JButton top25 = new JButton("top 25 stocks in Annualized ROR");
-
+		JButton top25output = new JButton("top25 output");
 		p3.add(top25);
-
+		p3.add(top25output);
 		out2.add(compare);
 		out2.add(p3);
 
@@ -207,6 +207,14 @@ public class Company extends JPanel{
 
 		});
 
+		top25output.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				Sql sql = new Sql();
+				ResultSet rt = sql.stockTop25Return(connection);
+				Output.getCsvFile("/home/xwang125/Desktop/top25output.csv", rt);
+			}
+		});
+
 		output.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {
 				Sql sql = new Sql();
@@ -233,6 +241,7 @@ public class Company extends JPanel{
 					list.add(v32);
 					try {
 						FileWriter writer = new FileWriter("/home/xwang125/Desktop/compare.csv");
+
 						writer.append(stockN1);
 						writer.append(',');
 						writer.append(stockN2);	
