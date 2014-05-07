@@ -38,12 +38,12 @@ public class Company extends JPanel{
 
 	private JTextField stock, date;
 
-	public Company(int width, int height) throws IOException {
+	public Company(Connection c, int width, int height) throws IOException {
 
 		this.width = width;
 		this.height = height;
 		setLayout(new BorderLayout());
-		connection = Utils.connectToSQL("root", "dingding1016"); 
+		this.connection = c; 
 
 		JPanel out1 = new JPanel(new GridLayout(0, 1));
 

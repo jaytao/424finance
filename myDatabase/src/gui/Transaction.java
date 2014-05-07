@@ -28,8 +28,8 @@ public class Transaction extends JPanel{
 	//for transcaion:
 	JTextField path;
 	Connection connection;
-	public Transaction() {
-		connection = Utils.connectToSQL("root", "dingding1016"); 
+	public Transaction(Connection c) {
+		connection = c; 
 		JPanel p1 = new JPanel();
 		JLabel l1= new JLabel("transaction");
 		l1.setFont(new Font("Serif", Font.BOLD, 20));

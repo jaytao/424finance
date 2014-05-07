@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import com.mysql.jdbc.MysqlDataTruncation;
+
 import db.Queries;
 import db.Utils;
 
@@ -12,7 +14,7 @@ public class Sql {
 	static Connection connection = null;
 	PreparedStatement statement = null;
 
-	String lastDate = "2013-12-31";
+	String lastDate = "2100-12-31";
 	String firstDate = "2005-01-03";
 	public Sql() {
 
@@ -66,7 +68,11 @@ public class Sql {
 				System.out.println(values);
 				statement3.setString(1, fundName);
 				statement3.setDouble(2, values);
-				statement3.executeUpdate();
+				try{
+					statement3.executeUpdate();
+				}catch(MysqlDataTruncation e){
+					
+				}
 
 			}
 			String s4 = "select * from temp order by value";
@@ -195,21 +201,20 @@ public class Sql {
 
 	//gets the portofolio total rate of return
 	public double portfolioRateOfReturn(Connection connection, String fund, String begin, String end){
-		double start = Queries.getFundTotalValue(connection, fund, begin);
+		double start = Utils.fundCurrentValue(connection, fund, begin);
+		System.out.println("--------------------------------");
+		System.out.println("Start: " + start);
 //		if(start == -1.0) {
 //			return -100.0;
 //		}
-		double total = portfolioWorthEnd(connection, fund);
+		double total = Utils.fundCurrentValue(connection, fund, end);
+		System.out.println("End: " + total);
 //		if(total == 0.0) {
 //			return -100.0;
 //		}
-		Queries.getCash(connection,fund, end);
-		total += Queries.getCash(connection, fund, end);
 		double contains = portfolioContainsPercent(connection, fund, end);
-		System.out.println(fund);
-		System.out.println(start);
-		System.out.println(total);
-		System.out.println(contains);
+		
+		System.out.println("Percent owned: " + contains);
 		return (total*(1-contains))/start;
 	}
 
@@ -219,8 +224,6 @@ public class Sql {
 				"(select individual, portfolio, max(date_order) latest_d from contains where portfolio=? group by individual) a, " +
 				"contains c where c.individual=a.individual and c.portfolio=a.portfolio and " +
 				"c.date_order=a.latest_d order by c.percent limit 1;";
-		
-		String create = "create table mystery(indi varchar(10), value DEC(50, 20))";
 		           
 		String insert = "insert ignore into mystery values (?,?) ";
 		
@@ -231,12 +234,10 @@ public class Sql {
 		ResultSet rsFunds = Queries.getFund(connection);
 		try {
 			PreparedStatement stQuery = connection.prepareStatement(query);
-			PreparedStatement stCreate = connection.prepareStatement(create);
 			PreparedStatement stRemove = connection.prepareStatement(remove);
 			PreparedStatement stInsert = connection.prepareStatement(insert);
 			PreparedStatement stMystery = connection.prepareStatement(mystery);
 			
-			stCreate.executeUpdate();
 			stRemove.executeUpdate();
 			
 			//go through all funds and run query
@@ -270,17 +271,17 @@ public class Sql {
 			
 	public ResultSet rankPortROR(Connection connection, int i) {
 		String s1 = "select name from fund where isindividual = ? ";
-		String s11 = "drop table rankPortROR";
-		String s2 = "create table rankPortROR(fund varchar(10), rateOfReturn dec(50, 25));";
+		String s11 = "delete from rankPortROR";
+		//String s2 = "create table rankPortROR(fund varchar(10), rateOfReturn dec(50, 25));";
 		try {
 			PreparedStatement statement1 = connection.prepareStatement(s1);
 			statement1.setInt(1, i);
 			PreparedStatement statement11 = connection.prepareStatement(s11);
-			PreparedStatement statement2 = connection.prepareStatement(s2);
+			//PreparedStatement statement2 = connection.prepareStatement(s2);
 			
 			ResultSet result1 = statement1.executeQuery();
 			statement11.executeUpdate();
-			statement2.executeUpdate();
+			//statement2.executeUpdate();
 			while(result1.next()) {
 				String fundName = result1.getString("name");
 				String startD = "select min(time) from value where fund = ?;";
@@ -293,11 +294,18 @@ public class Sql {
 				}
 				System.out.println(time);
 				double ror = portfolioRateOfReturn(connection, fundName, time, "2013-12-31");
+				if (ror < 0){
+					continue;
+				}
 				String s3 = "insert into rankPortROR values(?,?)";
 				PreparedStatement statement3 = connection.prepareStatement(s3);
 				statement3.setString(1, fundName);
 				statement3.setDouble(2, ror);
-				statement3.executeUpdate();
+				try{
+					statement3.executeUpdate();
+				}catch(MysqlDataTruncation e){
+					
+				}
 			}
 
 			String s4 = "select * from rankPortROR order by rateOfReturn";

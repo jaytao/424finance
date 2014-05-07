@@ -5,23 +5,27 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.io.IOException;
+import java.sql.Connection;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.WindowConstants;
 
+import db.Utils;
+
 public class Frame {
 	private static void createFrame() throws IOException {
+		Connection con = Utils.connectToSQL("root", "toor");
 		JFrame.setDefaultLookAndFeelDecorated(true);
 		JFrame frame = new JFrame("Stock");
 		int width = 1080, height = 800;
 		frame.setSize(new Dimension(width, height)); 
 		frame.setLayout(new GridLayout(0, 2, 20, 50));
-		frame.add(new Company(50,60));
-		frame.add(new Transaction());
-		frame.add(new Funds());
-		frame.add(new Individual());
+		frame.add(new Company(con,50,60));
+		frame.add(new Transaction(con));
+		frame.add(new Funds(con));
+		frame.add(new Individual(con));
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		int upperLeftCornerX = (screenSize.width - frame.getWidth()) / 2;
 		int upperLeftCornerY = (screenSize.height - frame.getHeight()) / 2;

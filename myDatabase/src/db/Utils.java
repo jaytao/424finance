@@ -161,10 +161,6 @@ public class Utils {
 				double percent = rs.getDouble(3);
 				
 				double amount = percent * fundCurrentValue(connection, fund, date);
-				System.out.println(fund);
-				System.out.println(fundCurrentValue(connection, fund,date));	
-				System.out.println(percent);
-				System.out.println(amount);
 				total += amount;
 			}
 			
