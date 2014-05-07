@@ -31,13 +31,13 @@ public class Transaction extends JPanel{
 	public Transaction(Connection c) {
 		connection = c; 
 		JPanel p1 = new JPanel();
-		JLabel l1= new JLabel("transaction");
+		JLabel l1= new JLabel("Transactions");
 		l1.setFont(new Font("Serif", Font.BOLD, 20));
 		p1.add(l1);
 
 
 		JPanel file = new JPanel();
-		JButton uploadFile = new JButton("uploadFile");
+		JButton uploadFile = new JButton("Upload .csv file");
 		file.add(uploadFile);
 		path = new JTextField(25);
 		file.add(path);
@@ -88,8 +88,8 @@ public class Transaction extends JPanel{
 	//	out3.add(buy);
 	//	out3.add(sell);
 
-		JButton partici = new JButton("majority participants");
-		JButton particioutput = new JButton("majority participants output");
+		JButton partici = new JButton("Majority Participants");
+		JButton particioutput = new JButton("Save Mystery to File");
 		out3.add(partici);
 		out3.add(particioutput);
 		
@@ -118,7 +118,7 @@ public class Transaction extends JPanel{
 			public void actionPerformed(ActionEvent arg0) {
 				Sql sql = new Sql();
 				ResultSet rt = sql.mysteryQuery(connection);
-				Output.getCsvFile("/home/xwang125/Desktop/majorityoutput.csv", rt);
+				Output.getCsvFile("mystery.csv", rt);
 			}
 		});
 	}

@@ -165,7 +165,7 @@ public class Sql {
 		try {
 			PreparedStatement st = connection.prepareStatement(query);
 			st.setString(1, firstDate);
-			st.setString(2, lastDate);
+			st.setString(2, "2013-12-31");
 			ResultSet rs = st.executeQuery();
 			return rs;
 		} catch (SQLException e) {

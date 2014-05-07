@@ -14,6 +14,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -57,7 +58,7 @@ public class Company extends JPanel{
 		out1.add(p1);
 
 		JPanel Iquote = new JPanel();
-		JButton quote = new JButton("quote");
+		JButton quote = new JButton("Get Quote");
 		Iquote.add(quote);
 		Iquote.add(new JLabel("stock: "));
 		stock = new JTextField(10);
@@ -129,19 +130,19 @@ public class Company extends JPanel{
 		//third panel
 		JPanel out2 = new JPanel(new GridLayout(0,1));
 		JPanel compare = new JPanel();
-		JLabel compareB = new JLabel("compare:");
+		JLabel compareB = new JLabel("Compare:");
 		compare.add(compareB);		
-		compare.add(new JLabel("stock1"));
+		compare.add(new JLabel("Stock 1"));
 		stock1 = new JTextField(10);
 		compare.add(stock1);
 		stock2 = new JTextField(10);
-		compare.add(new JLabel("stock2"));
+		compare.add(new JLabel("Stock 2"));
 		compare.add(stock2);
-		JButton output = new JButton("output file");
+		JButton output = new JButton("To File");
 		compare.add(output);
 		JPanel p3 = new JPanel();
-		JButton top25 = new JButton("top 25 stocks in Annualized ROR");
-		JButton top25output = new JButton("top25 output");
+		JButton top25 = new JButton("Top 25 Stocks in Rate of Return");
+		JButton top25output = new JButton("Save Top25 to File");
 		p3.add(top25);
 		p3.add(top25output);
 		out2.add(compare);
@@ -198,7 +199,7 @@ public class Company extends JPanel{
 				Sql sql = new Sql();
 				ResultSet rt = sql.stockTop25Return(connection);
 				JTable table= createTable(rt, 6);
-				JFrame f = showNewFrame2("annualized rate of return");
+				JFrame f = showNewFrame2("Annualized Rate of Return");
 				JScrollPane scrollPane = new JScrollPane(table);
 				JPanel p = new JPanel();
 				p.add(scrollPane);
@@ -211,7 +212,7 @@ public class Company extends JPanel{
 			public void actionPerformed(ActionEvent arg0) {
 				Sql sql = new Sql();
 				ResultSet rt = sql.stockTop25Return(connection);
-				Output.getCsvFile("/home/xwang125/Desktop/top25output.csv", rt);
+				Output.getCsvFile("top25output.csv", rt);
 			}
 		});
 
@@ -240,11 +241,11 @@ public class Company extends JPanel{
 					list.add(v31);
 					list.add(v32);
 					try {
-						FileWriter writer = new FileWriter("/home/xwang125/Desktop/compare.csv");
-
+						PrintWriter writer = new PrintWriter("compare.csv", "UTF-8");
+						
 						writer.append(stockN1);
 						writer.append(',');
-						writer.append(stockN2);	
+						writer.append(stockN2 + " (RoR;High;Low)");	
 						writer.append('\n');
 						int i = 0;
 						while(i < list.size()) {

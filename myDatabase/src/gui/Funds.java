@@ -42,7 +42,7 @@ public class Funds extends JPanel{
 		JPanel out1 = new JPanel(new GridLayout(0,1));
 
 		JPanel p1 = new JPanel();
-		JLabel l1= new JLabel("Portofolios");
+		JLabel l1= new JLabel("Portfolios");
 		l1.setFont(new Font("Serif", Font.BOLD, 20));
 		p1.add(l1);
 		out1.add(p1);
@@ -53,30 +53,30 @@ public class Funds extends JPanel{
 		startDate = new JTextField(7);
 		endDate = new JTextField(7);
 
-		fund.add(new JLabel("portofolio:"));
+		fund.add(new JLabel("Portfolio:"));
 		fund.add(port);
-		fund.add(new JLabel("startDate:"));
+		fund.add(new JLabel("Start Date:"));
 		fund.add(startDate);
-		fund.add(new JLabel("endDate:"));
+		fund.add(new JLabel("End Date:"));
 		fund.add(endDate);
 
 
 		//third panel
 		JPanel p2 = new JPanel(new GridLayout(0,4));
-		JButton retB = new JButton("returnValue");
-		JButton worthB = new JButton("worth");
+		JButton retB = new JButton("Return");
+		JButton worthB = new JButton("Worth");
 		worthB.setSize(10, 10);
 		
-		JButton b1 = new JButton("total rate of return");
-		JButton b2= new JButton("fianl net worth");
+		JButton b1 = new JButton("Rate of Return (All)");
+		JButton b2= new JButton("Net Worth (All)");
 		p2.add(b1);
 		p2.add(b2);
 		p2.add(retB);
 		p2.add(worthB);
-		JButton reto = new JButton("returnValue output");
-		JButton wortho = new JButton("worth output");
-		JButton totalreturno = new JButton("totalreturn output");
-		JButton networtho = new JButton("networth output");
+		JButton reto = new JButton("Value");
+		JButton wortho = new JButton("Worth");
+		JButton totalreturno = new JButton("Save to File");
+		JButton networtho = new JButton("Save to File");
 	//	p2.add(reto);
 	//	p2.add(wortho);
 		p2.add(totalreturno);
@@ -151,7 +151,7 @@ public class Funds extends JPanel{
 			public void actionPerformed(ActionEvent arg0) {
 				Sql sql = new Sql();
 				ResultSet set = sql.rankPortROR(connection, false);
-					Output.getCsvFile("/home/xwang125/Desktop/totalReturnOutput.csv", set);
+					Output.getCsvFile("portfolioTotalReturn.csv", set);
 				}
 			});
 		
@@ -179,7 +179,7 @@ public class Funds extends JPanel{
 			public void actionPerformed(ActionEvent arg0) {
 				Sql sql = new Sql();
 				ResultSet set = sql.portofolioTotalNetWorth(connection, 0,"2005-01-04", "2013-12-31");
-					Output.getCsvFile("/home/xwang125/Desktop/networthreturn.csv", set);
+					Output.getCsvFile("portfolioNetWorth.csv", set);
 				}
 			});
 
