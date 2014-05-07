@@ -53,7 +53,8 @@ public class Transaction extends JPanel{
 
 		uploadFile.addActionListener(new ActionListener() { 
 			public void actionPerformed(ActionEvent arg0) {
-				String fileName = path.getText(); 
+				String fileName = path.getText();
+				System.out.println(fileName);
 				try {
 					Process p = new Process(fileName);
 				} catch (IOException e) {

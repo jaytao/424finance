@@ -125,26 +125,16 @@ public class Sql {
 		}
 		return null;
 	}
-
-	public double portfolioWorth(Connection connection, String fund, String date) {
-		String input = "select t.value from" + 
-				"(select fund, value, max(time) from value where time <? and fund =? group by fund) as t";
-		PreparedStatement st;
-		try {
-
-			st = connection.prepareStatement(input);
-			st.setString(1, date);
-			st.setString(2, fund);
-			ResultSet rs = st.executeQuery();
-			if(rs.next()) {
-				return rs.getDouble("value");
-			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return -1;
-	}
+//
+//	public double portfolioWorth(Connection connection, String fund,  String date) {
+//		String input =  
+//				"select fund, value, max(time) as maxt from value where time <? and fund =? group by fund as t;";
+//		 
+//
+//			
+//			double value1 = Utils.fundCurrentValue(connection, fund, date); 
+//			
+//	}
 	public double portfolioWorthEnd(Connection connection, String fund){
 		String query = "select a.ticker, a.d, c.percent, b.value, c.percent * b.value from " +
 				"(select fund, ticker, max(date_execute) d from owns where fund=? group by ticker) a, " +
@@ -268,13 +258,13 @@ public class Sql {
 		return null;
 	}
 			
-	public ResultSet rankPortROR(Connection connection, int i) {
+	public ResultSet rankPortROR(Connection connection, boolean i) {
 		String s1 = "select name from fund where isindividual = ? ";
 		String s11 = "drop table rankPortROR";
 		String s2 = "create table rankPortROR(fund varchar(10), rateOfReturn dec(50, 25));";
 		try {
 			PreparedStatement statement1 = connection.prepareStatement(s1);
-			statement1.setInt(1, i);
+			statement1.setBoolean(1, i);
 			PreparedStatement statement11 = connection.prepareStatement(s11);
 			PreparedStatement statement2 = connection.prepareStatement(s2);
 			
