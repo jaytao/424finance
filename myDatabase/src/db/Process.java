@@ -26,26 +26,22 @@ public class Process {
 	Connection connection = null;
 	PreparedStatement statement = null;
 
-	String csvFile;
-	// for input file
 
-	//String csvFile = "/home/jeff/424/424finance/script4.csv";
 
 	public Process(String file ) throws IOException {
-		csvFile=file;
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			connection = DriverManager.getConnection("jdbc:mysql://Localhost/stocks", "root", "toor");
+			connection = DriverManager.getConnection("jdbc:mysql://Localhost/stocks", "root", "dingding1016");
 		} catch (Exception e) {
 			System.out.println("Error Occured While connecting " + e);
 		}
 		System.out.println("Fill activity");
-		fillActivity();
+		fillActivity(file);
 
 	}
 
 	// parses csv file and puts the info into the activity table
-	public void fillActivity() {
+	public void fillActivity(String file) {
 
 		BufferedReader br = null;
 		String line = "";
@@ -53,7 +49,8 @@ public class Process {
 
 		try {
 			int i = 0;
-			br = new BufferedReader(new FileReader(csvFile));
+			br = new BufferedReader(new FileReader(file));
+			System.out.println(file);
 			while ((line = br.readLine()) != null) {
 				String[] found = line.split(cvsSplitBy);
 				System.out.println(i++ + ": " + found[0]);

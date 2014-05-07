@@ -161,11 +161,14 @@ public class Company extends JPanel{
 		output.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {
 				Sql sql = new Sql();
-				String stockN1 = stock1.getText();
-				String stockN2 = stock2.getText();
-				ResultSet rt = sql.compareSet(stockN1, stockN2);
-				int i = 0;
-			
+				ResultSet set = sql.stockTop25Return(connection);
+				Output.getCsvFile("/home/xwang125/Desktop/test1.csv", set);
+				//				Sql sql = new Sql();
+//				String stockN1 = stock1.getText();
+//				String stockN2 = stock2.getText();
+//				ResultSet rt = sql.compareSet(stockN1, stockN2);
+//				int i = 0;
+//			
 			}
 		});
 	}

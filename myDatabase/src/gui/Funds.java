@@ -109,14 +109,7 @@ public class Funds extends JPanel{
 				String portName = port.getText();
 				String startD = startDate.getText();
 				String endD = endDate.getText();
-				Double value = 0.0;
-				if(endD.compareTo("2013-12-31") >= 0) {
-					value = sql.portfolioWorthEnd(connection, portName);
-				}
-				else {
-					value = sql.portfolioWorth(connection, portName, endD);
-				}
-
+				Double value = Utils.fundCurrentValue(connection, portName, endD); 
 				JFrame f = showNewFrame("net worth");
 				JPanel p = new JPanel();
 				JTextArea area = new JTextArea();
@@ -131,7 +124,7 @@ public class Funds extends JPanel{
 			public void actionPerformed(ActionEvent arg0) {
 				JFrame f = showNewFrame("rate of return");
 				Sql sql = new Sql();
-				ResultSet set = sql.rankPortROR(connection, 0);
+				ResultSet set = sql.rankPortROR(connection, false);
 				JTable t = createTable(set, 2);
 				JScrollPane scrollPane = new JScrollPane(t);
 				JPanel p = new JPanel();
