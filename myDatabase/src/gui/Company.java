@@ -1,6 +1,8 @@
 package gui;
 
-//import gui.Funds.MyButtonListener;
+/*
+ * provide informations for stocks
+ */
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -41,6 +43,7 @@ public class Company extends JPanel{
 
 	private JTextField stock, date;
 
+	//constructor
 	public Company(Connection c, int width, int height) throws IOException {
 
 		this.width = width;
@@ -56,6 +59,7 @@ public class Company extends JPanel{
 		p1.add(l1);
 		out1.add(p1);
 
+		//information for stock quotes
 		JPanel Iquote = new JPanel();
 		JButton quote = new JButton("quote");
 		Iquote.add(quote);
@@ -67,7 +71,7 @@ public class Company extends JPanel{
 		Iquote.add(date);
 		out1.add(Iquote); 
 
-
+		//register quote button, to get share price
 		quote.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {
 				Sql sql = new Sql();
@@ -83,9 +87,9 @@ public class Company extends JPanel{
 			}
 		} );
 
-		//for next Panel
+		//information of stocks, including rank stock rate of return, net worth,
+		// single stock rate of return and worth
 		JPanel display = new JPanel();
-		//	display.setSize(new Dimension(500,20));
 		JButton readData = new JButton("RateOfReturn");
 		display.add(readData);
 		display.add(new JLabel("stock: "));
@@ -101,6 +105,7 @@ public class Company extends JPanel{
 		d1.add(end);
 		display.add(d1);
 
+		//register "rateofreturn" button, to show the rate of return for input stock 
 		readData.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				JFrame f = showNewFrame2("rate of return");
@@ -126,7 +131,8 @@ public class Company extends JPanel{
 
 			}
 		});
-		//third panel
+		//third panel, compare stocks, and rank top 25 stocks in 
+		//annualized rate of return
 		JPanel out2 = new JPanel(new GridLayout(0,1));
 		JPanel compare = new JPanel();
 		JLabel compareB = new JLabel("compare:");
@@ -155,46 +161,10 @@ public class Company extends JPanel{
 		outer.add(out2);
 		add(outer, BorderLayout.NORTH);
 
-		//		compareB.addActionListener(new ActionListener(){
-		//			public void actionPerformed(ActionEvent arg0) {
-		//				Sql sql = new Sql();
-		//				String stockN1 = stock1.getText();
-		//				String stockN2 = stock2.getText();
-		//				Double v1 = sql.stockRateOfReturn(connection, stockN1, "2005-01-03", "2013-12-31");
-		//				Double v2 = sql.stockRateOfReturn(connection, stockN2, "2005-01-03", "2013-12-31");
-		//				Double v11 = Math.pow(v1,1/9)-1;
-		//				Double v22 = Math.pow(v2, 1/9) - 1;
-		//				
-		//				JFrame f = showNewFrame2("comparison");
-		//
-		//				//create table
-		//				JPanel p = new JPanel();
-		//				setLayout(new FlowLayout());
-		//				String[] columnNames = {stockN1, stockN2};
-		//				DefaultTableModel model = null;
-		//				Object[][] data = new Object[10][2];
-		//				Object[] rowData = new Object[2];
-		//				rowData[0] = v1;
-		//				System.out.println(rowData[0]);
-		//				rowData[1] = v2;
-		//				data[0] = rowData;
-		//				System.out.println(data[0][0]);
-		//				rowData[0] = v11;
-		//				rowData[1] = v22;
-		//				data[1] = rowData;
-		//				System.out.println(data[0][0]);
-		//				table = new JTable(data, columnNames);
-		//				table.setFillsViewportHeight(true);
-		//				JScrollPane scrollPane = new JScrollPane(table);
-		//				p.add(scrollPane);
-		//				f.add(p);
-		//			} 
-		//	}); 
-
-
-
+		//register top25 button, for annualized rate of return 
 		top25.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				System.out.println("hello");
 				Sql sql = new Sql();
 				ResultSet rt = sql.stockTop25Return(connection);
 				JTable table= createTable(rt, 6);
@@ -207,6 +177,7 @@ public class Company extends JPanel{
 
 		});
 
+		//export data of top annualized rate of return to csv file
 		top25output.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				Sql sql = new Sql();
@@ -215,16 +186,16 @@ public class Company extends JPanel{
 			}
 		});
 
+		//export data of comparison to csv file
 		output.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {
 				Sql sql = new Sql();
-				ResultSet set = sql.stockTop25Return(connection);
-
 				String stockN1 = stock1.getText();
 				String stockN2 = stock2.getText();
+				//get stock rate of return data
 				ResultSet set1 = sql.stockRateOfReturn(connection, stockN1, "2005-01-03", "2013-12-31");			
 				ResultSet set2 = sql.stockRateOfReturn(connection, stockN2, "2005-01-03", "2013-12-31");
-
+				//export data to csv file
 				try {
 					ArrayList<Double> list = new ArrayList<Double>();
 					Double v11 = set1.getDouble(1);
@@ -273,16 +244,17 @@ public class Company extends JPanel{
 	}
 
 
+	//create table for data of top 25 annulized total rate of return
 	private JTable createTable(ResultSet rs, int numberOfColumns) {
 		if(rs == null) {
+			System.out.println("nullnull");
 			return null;
 		}
 
 		JPanel porto = new JPanel();
 		setLayout(new FlowLayout());
 		porto.add(new JLabel("Information of stock"));
-		String[] columnNames = {"stock", "2", "3", "4", "5", "annulized total rate of return"};
-		DefaultTableModel model = null;
+		String[] columnNames = {"stock", "startdate", "price", "enddate", "price", "annulized total rate of return"};
 		JTable table = null;
 		int rowcount = 0;
 
@@ -318,6 +290,7 @@ public class Company extends JPanel{
 	}
 
 
+	// to create a new table to display data
 	private JFrame showNewFrame(String title, Object output) {
 		JFrame f = new JFrame();
 		f.setTitle(title);
@@ -332,7 +305,7 @@ public class Company extends JPanel{
 		f.setVisible(true);
 		return f;
 	}
-
+	//create another new table with different parameter
 	private JFrame showNewFrame2(String title) {
 		JFrame f = new JFrame();
 		f.setTitle(title);
@@ -342,6 +315,7 @@ public class Company extends JPanel{
 		return f;
 	}
 
+	//pop the window with error message when invalid data is input
 	private JFrame popError() {
 		JFrame f = new JFrame();
 		f.setTitle("Error!");

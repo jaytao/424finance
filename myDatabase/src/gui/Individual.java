@@ -29,11 +29,17 @@ import java.sql.Connection;
 
 import db.Utils;
 
+/*
+ * provide informations for individual
+ */
 public class Individual extends JPanel{
 	JTextField port, startDate, endDate;
 	private Connection connection;
+
+	//constructor
 	public Individual(Connection c) {
 		connection = c; 
+		//first panel, 
 		JPanel out1 = new JPanel(new GridLayout(0,1));
 
 		JPanel p1 = new JPanel();
@@ -42,7 +48,7 @@ public class Individual extends JPanel{
 		p1.add(l1);
 		out1.add(p1);
 
-		//second panel
+		//input individual's data
 		JPanel fund = new JPanel();
 		port = new JTextField(7);
 		startDate = new JTextField(7);
@@ -55,12 +61,12 @@ public class Individual extends JPanel{
 		fund.add(new JLabel("endDate:"));
 		fund.add(endDate);
 
-		//third panel
+		//for individual return value, net worth
 		JPanel p2 = new JPanel(new GridLayout(0,4));
 		JButton retB = new JButton("returnValue");
 		JButton worthB = new JButton("worth");
 		worthB.setSize(10, 10);
-		
+		//rank the total return and final net worth for all individuals
 		JButton b1 = new JButton("total return");
 		JButton b2= new JButton("fianl net worth");
 		p2.add(b1);
@@ -79,6 +85,7 @@ public class Individual extends JPanel{
 		outfin.add(out);
 		add(outfin);
 
+		//register retB button, for rate of return data
 		retB.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {
 
@@ -101,7 +108,8 @@ public class Individual extends JPanel{
 			}
 
 		});
-		
+
+		//register worthB button, for net worth data
 		worthB.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {
 				Sql sql = new Sql();
@@ -117,7 +125,8 @@ public class Individual extends JPanel{
 				f.add(p);
 			}
 		});
-		
+
+		//register rateOfReturn button, to rank rate of return
 		b1.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -132,17 +141,18 @@ public class Individual extends JPanel{
 			}
 
 		});
-		
+
+		//export data of total return to csv file 
 		totalreturno.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				Sql sql = new Sql();
 				ResultSet set = sql.rankPortROR(connection, true);
-					Output.getCsvFile("/home/xwang125/Desktop/totalReturnOutputIndi.csv", set);
-				}
-			});
-		
-		
+				Output.getCsvFile("/home/xwang125/Desktop/totalReturnOutputIndi.csv", set);
+			}
+		});
+
+		//register totalNetWorth button, for ranking total net worth
 		b2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				JFrame f = showNewFrame("total net worth");
@@ -155,17 +165,20 @@ public class Individual extends JPanel{
 				f.add(p);
 			}
 		});
-		
+
+		//export data of ranking net worth to csv file
 		networtho.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				Sql sql = new Sql();
 				ResultSet set = sql.portofolioTotalNetWorth(connection, 1, "2005-01-04", "2013-12-31");
-					Output.getCsvFile("/home/xwang125/Desktop/networthreturn.csv", set);
-				}
-			});
+				Output.getCsvFile("/home/xwang125/Desktop/networthreturnIndi.csv", set);
+			}
+		});
 
 	}
+	
+	//create table for ranking net worth and total return value
 	private JTable createTable(ResultSet rs, int numberOfColumns) {
 		if(rs == null) {
 			return null;
@@ -178,11 +191,12 @@ public class Individual extends JPanel{
 		DefaultTableModel model = null;
 		JTable table = null;
 		int rowcount = 0;
-		
+
 		try {
+			//check rows number
 			if (rs.last()) {
 				rowcount = rs.getRow();
-				rs.beforeFirst(); // not rs.first() because the rs.next() below will move on, missing the first element
+				rs.beforeFirst(); 
 			}
 			JScrollPane scrollPane = new JScrollPane(table);
 			porto.add(scrollPane);
@@ -204,10 +218,11 @@ public class Individual extends JPanel{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		return table;
 	}
 
+	//create new frame for table
 	private JFrame showNewFrame(String title) {
 		JFrame f = new JFrame();
 		f.setTitle(title);
@@ -216,7 +231,8 @@ public class Individual extends JPanel{
 		f.setVisible(true);
 		return f;
 	}
-
+	
+	//pop window with error message when input invalid data 
 	private JFrame popError() {
 		JFrame f = new JFrame();
 		f.setTitle("Error!");

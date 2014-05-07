@@ -5,14 +5,18 @@ import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import com.mysql.jdbc.ResultSetMetaData;
+/*
+ * Export table data to csv file
+ */
 
 public class Output {
 	public static void getCsvFile(String fileName, ResultSet set) {
 		try {
+			//create writer for output file
 			FileWriter writer = new FileWriter(fileName);
 			java.sql.ResultSetMetaData rsmd = set.getMetaData();
 			int columnsNumber = rsmd.getColumnCount();
+			//write data to output file
 			while(set.next()) {
 				for(int i = 1; i <= columnsNumber; i++) {
 					String s = set.getString(i);

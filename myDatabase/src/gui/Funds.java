@@ -30,24 +30,25 @@ import db.Process;
 import db.Queries;
 import db.Utils;
 
+/*
+ * provide informations for portofolios
+ */
 public class Funds extends JPanel{
 	private JTextField textField, port, startDate, endDate;
 	private JTextArea textArea;
 	private Connection connection;
-	//	Company portfolio;
 
 	public Funds(Connection c) throws IOException {
 		connection = c; 
-
+		//the title of panel
 		JPanel out1 = new JPanel(new GridLayout(0,1));
-
 		JPanel p1 = new JPanel();
 		JLabel l1= new JLabel("Portofolios");
 		l1.setFont(new Font("Serif", Font.BOLD, 20));
 		p1.add(l1);
 		out1.add(p1);
 
-		//second panel
+		//input portofolio data
 		JPanel fund = new JPanel();
 		port = new JTextField(7);
 		startDate = new JTextField(7);
@@ -60,25 +61,21 @@ public class Funds extends JPanel{
 		fund.add(new JLabel("endDate:"));
 		fund.add(endDate);
 
-
-		//third panel
+		//buttons for any portofolio's return value and net worth
 		JPanel p2 = new JPanel(new GridLayout(0,4));
 		JButton retB = new JButton("returnValue");
 		JButton worthB = new JButton("worth");
 		worthB.setSize(10, 10);
-		
+		// buttons to rank total rate of return and final net worth 
 		JButton b1 = new JButton("total rate of return");
-		JButton b2= new JButton("fianl net worth");
+		JButton b2= new JButton("final net worth");
 		p2.add(b1);
 		p2.add(b2);
 		p2.add(retB);
 		p2.add(worthB);
-		JButton reto = new JButton("returnValue output");
-		JButton wortho = new JButton("worth output");
+		//output button
 		JButton totalreturno = new JButton("totalreturn output");
 		JButton networtho = new JButton("networth output");
-	//	p2.add(reto);
-	//	p2.add(wortho);
 		p2.add(totalreturno);
 		p2.add(networtho);
 
@@ -88,6 +85,7 @@ public class Funds extends JPanel{
 		out.add(p2);
 		add(out);
 
+		//register return button, for any portofolio's rate of return
 		retB.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {
 
@@ -110,9 +108,8 @@ public class Funds extends JPanel{
 			}
 
 		});
-		
-		
 
+		//register worth button, for any portofolio's net worth
 		worthB.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {
 				Sql sql = new Sql();
@@ -128,9 +125,8 @@ public class Funds extends JPanel{
 				f.add(p);
 			}
 		});
-		
-	
 
+		// for ranking rate of return
 		b1.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -143,23 +139,20 @@ public class Funds extends JPanel{
 				p.add(scrollPane);
 				f.add(p);
 			}
-
 		});
 		
+		// export data of ranking total return to csv file 
 		totalreturno.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				Sql sql = new Sql();
 				ResultSet set = sql.rankPortROR(connection, false);
-					Output.getCsvFile("/home/xwang125/Desktop/totalReturnOutput.csv", set);
-				}
-			});
-		
-		
-		
+				Output.getCsvFile("/home/xwang125/Desktop/totalReturnOutput.csv", set);
+			}
+		});
 
+		//rank total net worth for all the portofolios
 		b2.addActionListener(new ActionListener() {
-
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				JFrame f = showNewFrame("total net worth");
@@ -171,21 +164,20 @@ public class Funds extends JPanel{
 				p.add(scrollPane);
 				f.add(p);
 			}
-
 		});
-		
+
+		// export total net worth data to csv file
 		networtho.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				Sql sql = new Sql();
 				ResultSet set = sql.portofolioTotalNetWorth(connection, 0,"2005-01-04", "2013-12-31");
-					Output.getCsvFile("/home/xwang125/Desktop/networthreturn.csv", set);
-				}
-			});
-
+				Output.getCsvFile("/home/xwang125/Desktop/networthreturn.csv", set);
+			}
+		});
 	}
 
-
+	//create table for data of return value and final net worth
 	private JTable createTable(ResultSet rs, int numberOfColumns) {
 		if(rs == null) {
 			return null;
@@ -202,16 +194,16 @@ public class Funds extends JPanel{
 		try {
 			if (rs.last()) {
 				rowcount = rs.getRow();
-				rs.beforeFirst(); // not rs.first() because the rs.next() below will move on, missing the first element
+				// not rs.first() because the rs.next() below will move on, 
+				//missing the first element
+				rs.beforeFirst(); 
 			}
-			//	model = new DefaultTableModel(columnNames, rowcount); 
-
-
+		
 			JScrollPane scrollPane = new JScrollPane(table);
 			porto.add(scrollPane);
 			Object[][] data = new Object[rowcount][numberOfColumns];
 			int j = 0;
-			while (rs.next()) {
+			while (rs.next()) { //read data
 				Object[] rowData = new Object[numberOfColumns];
 				System.out.println(rowData.length);
 				for(int i  = 0; i < rowData.length; i++) {
@@ -227,10 +219,10 @@ public class Funds extends JPanel{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 		return table;
 	}
 
+	//create frame for table
 	private JFrame showNewFrame(String title) {
 		JFrame f = new JFrame();
 		f.setTitle(title);
@@ -239,7 +231,7 @@ public class Funds extends JPanel{
 		f.setVisible(true);
 		return f;
 	}
-
+	//pop window with error message
 	private JFrame popError() {
 		JFrame f = new JFrame();
 		f.setTitle("Error!");
@@ -252,7 +244,4 @@ public class Funds extends JPanel{
 		f.setVisible(true);
 		return f;
 	}
-
-
-
 }

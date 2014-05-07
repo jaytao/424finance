@@ -14,14 +14,21 @@ import javax.swing.WindowConstants;
 
 import db.Utils;
 
+/*
+ *Create a frame as interface 
+ * 
+ */
 public class Frame {
 	private static void createFrame() throws IOException {
 		Connection con = Utils.connectToSQL("root", "dingding1016");
 		JFrame.setDefaultLookAndFeelDecorated(true);
 		JFrame frame = new JFrame("Stock");
 		int width = 1080, height = 800;
-		frame.setSize(new Dimension(width, height)); 
+		//set size
+		frame.setSize(new Dimension(width, height));
+		//set layout for the frame
 		frame.setLayout(new GridLayout(0, 2, 20, 50));
+		//add containers
 		frame.add(new Company(con,50,60));
 		frame.add(new Transaction(con));
 		frame.add(new Funds(con));

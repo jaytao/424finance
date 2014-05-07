@@ -248,7 +248,7 @@ public class Process {
 
 	public static void main(String[] args) throws SQLException, IOException, ParseException {
 
-		Process testBlob = new Process("/home/xwang125/Class/cmsc424/project/script1.csv");
+		Process testBlob = new Process("/home/xwang125/Class/cmsc424/project/script4.csv");
 		// Connection c = Utils.connectToSQL("root", "toor");
 	}
 
