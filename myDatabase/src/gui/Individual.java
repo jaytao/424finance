@@ -32,8 +32,8 @@ import db.Utils;
 public class Individual extends JPanel{
 	JTextField port, startDate, endDate;
 	private Connection connection;
-	public Individual() {
-		connection = Utils.connectToSQL("root", "dingding1016"); 
+	public Individual(Connection c) {
+		connection = c; 
 		JPanel out1 = new JPanel(new GridLayout(0,1));
 
 		JPanel p1 = new JPanel();

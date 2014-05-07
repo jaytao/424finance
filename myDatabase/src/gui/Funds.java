@@ -36,8 +36,8 @@ public class Funds extends JPanel{
 	private Connection connection;
 	//	Company portfolio;
 
-	public Funds() throws IOException {
-		connection = Utils.connectToSQL("root", "dingding1016"); 
+	public Funds(Connection c) throws IOException {
+		connection = c; 
 
 		JPanel out1 = new JPanel(new GridLayout(0,1));
 

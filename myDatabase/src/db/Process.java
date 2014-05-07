@@ -26,13 +26,9 @@ public class Process {
 	Connection connection = null;
 	PreparedStatement statement = null;
 
-	static String csvFile = "/home/xwang125/Class/cmsc424/project/script4.csv";
-	// for input file
 
-	//String csvFile = "/home/jeff/424/424finance/script4.csv";
 
 	public Process(String file ) throws IOException {
-
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			connection = DriverManager.getConnection("jdbc:mysql://Localhost/stocks", "root", "dingding1016");
@@ -150,9 +146,9 @@ public class Process {
 				}
 
 				// new cash amount
-				Queries.insertCash(connection, fund, cash / newFundValue, executeDate);
+				Queries.insertCash(connection, fund, cash / newFundValue, date);
 				// new value amount
-				Queries.insertValue(connection, fund, newFundValue, executeDate);
+				Queries.insertValue(connection, fund, newFundValue, date);
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -252,7 +248,7 @@ public class Process {
 
 	public static void main(String[] args) throws SQLException, IOException, ParseException {
 
-		Process testBlob = new Process(csvFile);
+		Process testBlob = new Process("/home/xwang125/Class/cmsc424/project/script1.csv");
 		// Connection c = Utils.connectToSQL("root", "toor");
 	}
 
