@@ -42,7 +42,47 @@ public class Sql {
 		return -1;
 
 	}
+	
+	public double hightestQuote(Connection connection, String stock) {
+		String input = "select t.maxt from" +  
+				  "(select ticker, max(adjclose) as maxt from quotes where ticker = ? group by ticker) as t;";
+		try {
+			double rs = -1;
+			statement = connection.prepareStatement(input);
+			statement.setString(1, stock);
+			ResultSet result = statement.executeQuery();
+			while (result.next()) {
+				rs = result.getDouble("maxt");
+			}
+			return rs;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return -1;
 
+	}
+	
+	
+	public double lowestQuote(Connection connection, String stock) {
+		String input = "select t.mint from" +  
+				  "(select ticker, min(adjclose) as mint from quotes where ticker = ? group by ticker) as t;";
+		try {
+			double rs = -1;
+			statement = connection.prepareStatement(input);
+			statement.setString(1, stock);
+			ResultSet result = statement.executeQuery();
+			while (result.next()) {
+				rs = result.getDouble("mint");
+			}
+			return rs;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return -1;
+
+	}
 	public ResultSet portofolioTotalNetWorth(Connection connection, int i, String startdate, String endDate) {
 		String drop = "drop table temp";
 		String s1 = "select name from fund where isindividual = ?";
@@ -82,7 +122,7 @@ public class Sql {
 
 	}
 
-	public double stockRateOfReturn(Connection connection, String ticker, String begin, String end) {
+	public ResultSet stockRateOfReturn(Connection connection, String ticker, String begin, String end) {
 		String query = "SELECT b.adjclose/a.adjclose FROM"
 				+ " (SELECT * FROM quotes where ticker=? and time>=? order by time asc limit 1) a,"
 				+ " (select * from quotes where ticker=? and time>=? order by time asc limit 1) b;";
@@ -96,16 +136,19 @@ public class Sql {
 			st.setString(4, end);
 
 			ResultSet rs = st.executeQuery();
-			rs.next();
-			return rs.getDouble(1);
-
+			if (rs.next()) {
+				return rs;
+			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return -1;
+			
 		}
+		return null;
 	}
 
+	
+	
 	public ResultSet stockTop25Return(Connection connection) {
 		String query = "select t Ticker, q1.time, q1.adjclose, q2.time, q2.adjclose, " +
 				"pow(q2.adjclose/q1.adjclose,1/9)-1 AnnualRoR from quotes q1, quotes q2, " +

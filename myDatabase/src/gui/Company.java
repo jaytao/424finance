@@ -12,6 +12,7 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -21,6 +22,8 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 
 import java.sql.Connection;
+import java.util.ArrayList;
+
 import db.Process;
 import db.Utils;
 
@@ -105,14 +108,22 @@ public class Company extends JPanel{
 				String stock = stockName.getText();
 				String startD = start.getText();
 				String endD = end.getText();
-				Double result = sql.stockRateOfReturn(connection, stock, startD, endD);
-				JPanel showResult = new JPanel();
-				JTextArea area = new JTextArea();
-				area.setText(result.toString());
-				JScrollPane scroll = new JScrollPane(area);
-				showResult.add(scroll);
-				f.add(showResult);
-				f.setVisible(true);
+				ResultSet set = sql.stockRateOfReturn(connection, stock, startD, endD);
+				Double result;
+				try {
+					result = set.getDouble(1);
+					JPanel showResult = new JPanel();
+					JTextArea area = new JTextArea();
+					area.setText(result.toString());
+					JScrollPane scroll = new JScrollPane(area);
+					showResult.add(scroll);
+					f.add(showResult);
+					f.setVisible(true);
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
 			}
 		});
 		//third panel
@@ -144,6 +155,44 @@ public class Company extends JPanel{
 		outer.add(out2);
 		add(outer, BorderLayout.NORTH);
 
+		//		compareB.addActionListener(new ActionListener(){
+		//			public void actionPerformed(ActionEvent arg0) {
+		//				Sql sql = new Sql();
+		//				String stockN1 = stock1.getText();
+		//				String stockN2 = stock2.getText();
+		//				Double v1 = sql.stockRateOfReturn(connection, stockN1, "2005-01-03", "2013-12-31");
+		//				Double v2 = sql.stockRateOfReturn(connection, stockN2, "2005-01-03", "2013-12-31");
+		//				Double v11 = Math.pow(v1,1/9)-1;
+		//				Double v22 = Math.pow(v2, 1/9) - 1;
+		//				
+		//				JFrame f = showNewFrame2("comparison");
+		//
+		//				//create table
+		//				JPanel p = new JPanel();
+		//				setLayout(new FlowLayout());
+		//				String[] columnNames = {stockN1, stockN2};
+		//				DefaultTableModel model = null;
+		//				Object[][] data = new Object[10][2];
+		//				Object[] rowData = new Object[2];
+		//				rowData[0] = v1;
+		//				System.out.println(rowData[0]);
+		//				rowData[1] = v2;
+		//				data[0] = rowData;
+		//				System.out.println(data[0][0]);
+		//				rowData[0] = v11;
+		//				rowData[1] = v22;
+		//				data[1] = rowData;
+		//				System.out.println(data[0][0]);
+		//				table = new JTable(data, columnNames);
+		//				table.setFillsViewportHeight(true);
+		//				JScrollPane scrollPane = new JScrollPane(table);
+		//				p.add(scrollPane);
+		//				f.add(p);
+		//			} 
+		//	}); 
+
+
+
 		top25.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				Sql sql = new Sql();
@@ -157,18 +206,59 @@ public class Company extends JPanel{
 			}
 
 		});
-		
+
 		output.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {
 				Sql sql = new Sql();
 				ResultSet set = sql.stockTop25Return(connection);
-				Output.getCsvFile("/home/xwang125/Desktop/test1.csv", set);
-				//				Sql sql = new Sql();
-//				String stockN1 = stock1.getText();
-//				String stockN2 = stock2.getText();
-//				ResultSet rt = sql.compareSet(stockN1, stockN2);
-//				int i = 0;
-//			
+
+				String stockN1 = stock1.getText();
+				String stockN2 = stock2.getText();
+				ResultSet set1 = sql.stockRateOfReturn(connection, stockN1, "2005-01-03", "2013-12-31");			
+				ResultSet set2 = sql.stockRateOfReturn(connection, stockN2, "2005-01-03", "2013-12-31");
+
+				try {
+					ArrayList<Double> list = new ArrayList<Double>();
+					Double v11 = set1.getDouble(1);
+					Double v12 = set2.getDouble(1);
+					Double v21 = sql.hightestQuote(connection, stockN1);
+					Double v22 = sql.hightestQuote(connection, stockN2);
+					Double v31 = sql.lowestQuote(connection, stockN1);
+					Double v32 = sql.lowestQuote(connection, stockN2);
+					list.add(v11);
+					list.add(v12);
+					list.add(v21);
+					list.add(v22);
+					list.add(v31);
+					list.add(v32);
+					try {
+						FileWriter writer = new FileWriter("/home/xwang125/Desktop/compare.csv");
+						writer.append(stockN1);
+						writer.append(',');
+						writer.append(stockN2);	
+						writer.append('\n');
+						int i = 0;
+						while(i < list.size()) {
+							writer.append(list.get(i).toString());
+							if(i % 2 == 0) {
+								writer.append(',');
+							}
+							else {
+								writer.append("\n");
+							}
+							i++;
+						}
+
+						writer.flush();
+						writer.close();
+					}catch(IOException e) {
+						e.printStackTrace();
+					} 
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
 			}
 		});
 	}
