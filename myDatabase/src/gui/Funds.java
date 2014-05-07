@@ -43,7 +43,7 @@ public class Funds extends JPanel{
 		//the title of panel
 		JPanel out1 = new JPanel(new GridLayout(0,1));
 		JPanel p1 = new JPanel();
-		JLabel l1= new JLabel("Portofolios");
+		JLabel l1= new JLabel("Portfolios");
 		l1.setFont(new Font("Serif", Font.BOLD, 20));
 		p1.add(l1);
 		out1.add(p1);
@@ -54,28 +54,43 @@ public class Funds extends JPanel{
 		startDate = new JTextField(7);
 		endDate = new JTextField(7);
 
-		fund.add(new JLabel("portofolio:"));
+		fund.add(new JLabel("Portfolio:"));
 		fund.add(port);
-		fund.add(new JLabel("startDate:"));
+		fund.add(new JLabel("Start Date:"));
 		fund.add(startDate);
-		fund.add(new JLabel("endDate:"));
+		fund.add(new JLabel("End Date:"));
 		fund.add(endDate);
 
 		//buttons for any portofolio's return value and net worth
 		JPanel p2 = new JPanel(new GridLayout(0,4));
-		JButton retB = new JButton("returnValue");
-		JButton worthB = new JButton("worth");
+		JButton retB = new JButton("Return");
+		JButton worthB = new JButton("Worth");
 		worthB.setSize(10, 10);
+<<<<<<< HEAD
 		// buttons to rank total rate of return and final net worth 
 		JButton b1 = new JButton("total rate of return");
 		JButton b2= new JButton("final net worth");
+=======
+		
+		JButton b1 = new JButton("Rate of Return (All)");
+		JButton b2= new JButton("Net Worth (All)");
+>>>>>>> 4b578baea400e004cb08cd8b99421b14a5ceef72
 		p2.add(b1);
 		p2.add(b2);
 		p2.add(retB);
 		p2.add(worthB);
+<<<<<<< HEAD
 		//output button
 		JButton totalreturno = new JButton("totalreturn output");
 		JButton networtho = new JButton("networth output");
+=======
+		JButton reto = new JButton("Value");
+		JButton wortho = new JButton("Worth");
+		JButton totalreturno = new JButton("Save to File");
+		JButton networtho = new JButton("Save to File");
+	//	p2.add(reto);
+	//	p2.add(wortho);
+>>>>>>> 4b578baea400e004cb08cd8b99421b14a5ceef72
 		p2.add(totalreturno);
 		p2.add(networtho);
 
@@ -147,9 +162,18 @@ public class Funds extends JPanel{
 			public void actionPerformed(ActionEvent arg0) {
 				Sql sql = new Sql();
 				ResultSet set = sql.rankPortROR(connection, false);
+<<<<<<< HEAD
 				Output.getCsvFile("/home/xwang125/Desktop/totalReturnOutput.csv", set);
 			}
 		});
+=======
+					Output.getCsvFile("portfolioTotalReturn.csv", set);
+				}
+			});
+		
+		
+		
+>>>>>>> 4b578baea400e004cb08cd8b99421b14a5ceef72
 
 		//rank total net worth for all the portofolios
 		b2.addActionListener(new ActionListener() {
@@ -172,9 +196,16 @@ public class Funds extends JPanel{
 			public void actionPerformed(ActionEvent arg0) {
 				Sql sql = new Sql();
 				ResultSet set = sql.portofolioTotalNetWorth(connection, 0,"2005-01-04", "2013-12-31");
+<<<<<<< HEAD
 				Output.getCsvFile("/home/xwang125/Desktop/networthreturn.csv", set);
 			}
 		});
+=======
+					Output.getCsvFile("portfolioNetWorth.csv", set);
+				}
+			});
+
+>>>>>>> 4b578baea400e004cb08cd8b99421b14a5ceef72
 	}
 
 	//create table for data of return value and final net worth

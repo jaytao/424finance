@@ -123,6 +123,7 @@ public class Utils {
 		}
 	}
 
+	//solves question 6 on the writeup
 	public static void stockTop5Safe(Connection connection) {
 		String query = "select a.ticker, a.adjclose, a.time, b.adjclose, b.time, (a.adjclose - b.adjclose)/a.adjclose d from quotes a, quotes b where a.ticker = b.ticker and a.time < b.time and a.adjclose > b.adjclose and a.ticker = ? order by (a.adjclose-b.adjclose)/a.adjclose desc limit 5;";
 		Iterator<String> iter = Constants.COMPANIES.iterator();
@@ -145,6 +146,7 @@ public class Utils {
 		}
 	}
 	
+	//part of the mystery query. given a fund, sums up the total amount that is owned by individuals
 	public static double individualValueInFunds(Connection connection, String ind, String date){
 		String query = "select a.individual, a.portfolio, c.percent from " +
 				"(select individual, portfolio, max(date_order) d from contains where individual=? and date_order<=? group by portfolio) a, " +
@@ -170,6 +172,45 @@ public class Utils {
 			e.printStackTrace();
 		}
 		return total;
+	}
+	
+	//this method solves question 7 that we have to include in the writeup
+	public static void stocksIncreasing(Connection connection){
+		String query = "select * from (select ticker, min(time) m from quotes where ticker=? and year(time)=?) a, quotes b where a.ticker=b.ticker and b.time=a.m;";
+		try {
+			PreparedStatement st = connection.prepareStatement(query);
+			ResultSet rs;
+			Iterator<String> it = Constants.COMPANIES.iterator();
+			while(it.hasNext()){
+				double prev = 0;
+				boolean increase = true;
+				String ticker = ticker = it.next();
+				for (int x =2005; x <= 2013; x++){
+					st.setString(1, ticker);
+					st.setString(2, ""+x);
+					
+					rs = st.executeQuery();
+					if(rs.next()){
+						if (rs.getDouble(5) < prev){
+							increase = false;
+							System.out.println(ticker + " " + x + " " + rs.getDouble(5));
+							break;
+						}
+						else{
+							prev = rs.getDouble(5);
+							System.out.println(ticker + " " + x + " " + prev);
+						}
+					}
+				}
+				if (increase){
+					System.out.println(ticker);
+				}
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
 }

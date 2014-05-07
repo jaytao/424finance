@@ -31,7 +31,7 @@ public class Process {
 	public Process(String file ) throws IOException {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			connection = DriverManager.getConnection("jdbc:mysql://Localhost/stocks", "root", "dingding1016");
+			connection = DriverManager.getConnection("jdbc:mysql://Localhost/stocks", "root", "toor");
 		} catch (Exception e) {
 			System.out.println("Error Occured While connecting " + e);
 		}
@@ -248,8 +248,14 @@ public class Process {
 
 	public static void main(String[] args) throws SQLException, IOException, ParseException {
 
+<<<<<<< HEAD
 		Process testBlob = new Process("/home/xwang125/Class/cmsc424/project/script4.csv");
 		// Connection c = Utils.connectToSQL("root", "toor");
+=======
+		Process testBlob = new Process("/home/jeff/424/424finance/script4.csv");
+//		 Connection c = Utils.connectToSQL("root", "toor");
+//		 Utils.stocksIncreasing(c);
+>>>>>>> 4b578baea400e004cb08cd8b99421b14a5ceef72
 	}
 
 }
